@@ -88,7 +88,7 @@ const UpdateStudent = () => {
             <input
               type="text"
               {...register("name", { required: "Name is required" })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.name && (
               <p className="text-red-500">{errors.name.message}</p>
@@ -99,7 +99,7 @@ const UpdateStudent = () => {
             <input
               type="text"
               {...register("password", { required: "Password is required" })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.password && (
               <p className="text-red-500">{errors.password.message}</p>
@@ -117,7 +117,7 @@ const UpdateStudent = () => {
                     "Number must start with 01 and be exactly 11 digits long",
                 },
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.number && (
               <p className="text-red-500">{errors.number.message}</p>
@@ -130,7 +130,7 @@ const UpdateStudent = () => {
               {...register("fathers_name", {
                 required: "Father's name is required",
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.fathers_name && (
               <p className="text-red-500">{errors.fathers_name.message}</p>
@@ -143,7 +143,7 @@ const UpdateStudent = () => {
               {...register("mothers_name", {
                 required: "Mother's name is required",
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.mothers_name && (
               <p className="text-red-500">{errors.mothers_name.message}</p>
@@ -161,7 +161,7 @@ const UpdateStudent = () => {
                     "Father's number must start with 01 and be exactly 11 digits long",
                 },
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.fathers_number && (
               <p className="text-red-500">{errors.fathers_number.message}</p>
@@ -179,7 +179,7 @@ const UpdateStudent = () => {
                     "Mother's number must start with 01 and be exactly 11 digits long",
                 },
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.mothers_number && (
               <p className="text-red-500">{errors.mothers_number.message}</p>
@@ -200,7 +200,7 @@ const UpdateStudent = () => {
                   message: "Class must be between 6 and 10",
                 },
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.class && (
               <p className="text-red-500">{errors.class.message}</p>
@@ -213,7 +213,7 @@ const UpdateStudent = () => {
               {...register("class_role", {
                 required: "Class role is required",
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.class_role && (
               <p className="text-red-500">{errors.class_role.message}</p>

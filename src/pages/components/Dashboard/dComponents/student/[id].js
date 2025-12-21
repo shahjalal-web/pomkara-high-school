@@ -265,480 +265,164 @@ const StudentDetails = () => {
   }
 
   return (
-    <div>
-      <div className=" mx-auto md:w-1/3 w-full p-3 shadow-lg rounded mt-5">
-        <h1 className="text-4xl font-bold mb-4 text-green-500 text-center">
-          Student Details
+        <div className="space-y-10 p-4 md:p-8">
+      {/* ================= Student Card ================= */}
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6">
+        <h1 className="text-3xl font-bold text-center text-green-600 mb-6">
+          Student Profile
         </h1>
-        <div className="flex flex-col ">
-          <h1 className="text-2xl font-bold border text-left mt-0 py-3">
-            Name: {student.name}
-          </h1>
-          <h3 className="font-bold font-serif text-md text-left border mt-0 py-3">
-            Phone number: {student.number}
-          </h3>
-          <h3 className="font-bold font-serif text-md text-left border mt-0 py-3 text-red-400">
-            Password: {student.password}
-          </h3>
-          <p className="font-bold font-serif text-md text-left border mt-0 py-3">
-            Class: {student.class}
-          </p>
-          <p className="font-bold font-serif text-md text-left border mt-0 py-3">
-            Class Role: {student.class_role}
-          </p>
-          <p
-            className={`font-bold font-serif text-md text-left border mt-0 py-3 ${
-              totalAmount > 1000 ? "text-red-500" : "text-green-500"
-            }`}
-          >
-            due_payment: {totalAmount} Taka
-          </p>
 
-          <p className="font-bold font-serif text-md text-left border mt-0 py-3 ">
-            Fathers Name: {student.fathers_name}
-          </p>
-          <p className="font-bold font-serif text-md text-left border mt-0 py-3">
-            Fathers Number: {student.fathers_number}
-          </p>
-          <p className="font-bold font-serif text-md text-left border mt-0 py-3">
-            Mothers Name: {student.mothers_name}
-          </p>
-          <p className="font-bold font-serif text-md text-left border mt-0 py-3">
-            Mothers Number: {student.mothers_number}
-          </p>
-          <p className="font-bold font-serif text-red-400 text-md text-left border mt-0 py-3">
-            Previous Years Due: {student.last_year_due}
+        <div className="grid md:grid-cols-2 gap-4 text-sm">
+          <p><b>Name:</b> {student.name}</p>
+          <p><b>Phone:</b> {student.number}</p>
+          <p><b>Class:</b> {student.class}</p>
+          <p><b>Class Roll:</b> {student.class_role}</p>
+          <p><b>Father:</b> {student.fathers_name}</p>
+          <p><b>Father Phone:</b> {student.fathers_number}</p>
+          <p><b>Mother:</b> {student.mothers_name}</p>
+          <p><b>Mother Phone:</b> {student.mothers_number}</p>
+          <p className="text-red-500 font-bold">
+            Total Due: {totalAmount} Taka
           </p>
         </div>
-        <div className="flex">
-          {["teacher", "principle"].includes(user?.role) && (
-            <>
-              <button
-                className="btn mr-1 btn-success px-4 mt-2 rounded-none text-white"
-                onClick={() =>
-                  router.push(
-                    `/components/Dashboard/dComponents/student/update/${student._id}`
-                  )
-                }
-              >
-                Update
-              </button>
-              <div>
-                <button
-                  className="btn mr-1 btn-info rounded-none text-white px-4 mt-2"
-                  onClick={handleDueModalOpen}
-                >
-                  Add Amount
-                </button>
 
-                <div className="">
-                  <ReactModal
-                    isOpen={showDueModal}
-                    onRequestClose={handleDueModalClose}
-                    className="md:w-2/4 mx-auto bg-green-900 p-10 "
-                  >
-                    {/* Modal content */}
-                    <div className="text-center block">
-                      <form>
-                        <div>
-                          <select
-                            className="w-full text-2xl mb-3"
-                            onChange={(e) => {
-                              setAmountType(e.target.value);
-                            }}
-                          >
-                            {/* Options for amount types */}
-                            <option disabled selected>
-                              Select one
-                            </option>
-                            <option value="monthly_fee">Monthly Fee</option>
-                            <option value="exam_fee">Exam Fee</option>
-                            <option value="session_fee">Session Fee</option>
-                            <option value="scout_fee">Scout Fee</option>
-                            <option value="electricity_fee">
-                              Electricity Fee
-                            </option>
-                            <option value="fine">Fine</option>
-                            <option value="other">Other</option>
-                          </select>
-                        </div>
-                        <div>
-                          <input
-                            type="number"
-                            className="w-full text-2xl"
-                            onChange={(e) => setAmount(e.target.value)}
-                          />
-                        </div>
-                      </form>
-                      <p className="text-red-500">{error}</p>
-                      <div className="flex justify-between">
-                        <button
-                          className="btn btn-success mt-3 px-9"
-                          onClick={() => handleAddAmount(student._id)}
-                        >
-                          Submit
-                        </button>
-                        <button
-                          className="btn btn-warning mt-3 px-9"
-                          onClick={handleDueModalClose}
-                        >
-                          Close
-                        </button>
-                      </div>
-                    </div>
-                  </ReactModal>
-                </div>
-              </div>
-            </>
-          )}
-
-          <div>
-            {totalAmount > 0 && (
-              <>
-                <button
-                  className="btn btn-warning text-white rounded-none px-4 mt-2"
-                  onClick={handleOpenModal}
-                >
-                  Cut Amount
-                </button>
-              </>
-            )}
-
-            <div className="">
-              <ReactModal
-                isOpen={showModal}
-                onRequestClose={handleCloseModal}
-                className="md:w-2/4 mx-auto bg-slate-900 p-10 "
-              >
-                {/* Modal content */}
-                <div className="text-center block">
-                  <form>
-                    <div>
-                      <select
-                        className="w-full text-2xl mb-3"
-                        onChange={(e) => {
-                          setAmountType(e.target.value);
-                        }}
-                      >
-                        {/* Options for amount types */}
-                        <option disabled selected>
-                          Select one
-                        </option>
-                        <option value="monthly_fee">Monthly Fee</option>
-                        <option value="exam_fee">Exam Fee</option>
-                        <option value="session_fee">Session Fee</option>
-                        <option value="scout_fee">Scout Fee</option>
-                        <option value="electricity_fee">Electricity Fee</option>
-                        <option value="fine">Fine</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                    <div>
-                      <input
-                        type="number"
-                        className="w-full text-2xl"
-                        onChange={(e) => setAmount(e.target.value)}
-                      />
-                    </div>
-                  </form>
-                  <p className="text-red-500">{error}</p>
-                  <div className="flex justify-between">
-                    <button
-                      className="btn btn-success mt-3 px-9"
-                      onClick={() => handleCutAmount(student._id)}
-                    >
-                      Submit
-                    </button>
-                    <button
-                      className="btn btn-warning mt-3 px-9"
-                      onClick={handleCloseModal}
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </ReactModal>
-            </div>
-          </div>
-          <div></div>
-        </div>
+        {/* ================= ACTION BUTTONS ================= */}
         {["teacher", "principle"].includes(user?.role) && (
-          <div className="text-center">
+          <div className="mt-6 grid md:grid-cols-3 gap-3">
             <button
-              className="btn w-full btn-success text-white rounded-none px-4 mt-2"
-              onClick={handleOpenResultModal}
+              className="btn bg-blue-500 text-white"
+              onClick={() =>
+                router.push(
+                  `/components/Dashboard/dComponents/student/update/${student._id}`
+                )
+              }
             >
-              Add Result
+              Update Student Info
             </button>
-            <ReactModal
-              isOpen={showResultModal}
-              onRequestClose={handleCloseResultModal}
-              className="md:w-2/4 mx-auto bg-slate-900 p-10 "
+
+            <button
+              className="btn bg-green-600 text-white"
+              onClick={handleDueModalOpen}
             >
-              {/* Modal content */}
-              <div className="text-center block">
-                <form>
-                  <div>
-                    <select
-                      required
-                      className="w-full text-2xl mb-3"
-                      onChange={(e) => {
-                        setExamType(e.target.value);
-                      }}
-                    >
-                      {/* Options for amount types */}
-                      <option disabled selected>
-                        Select exam_Type one
-                      </option>
-                      <option value="Eeekly">weekly</option>
-                      <option value="Monthly">Monthly</option>
-                      <option value="Half_Yearly">Half Yearly</option>
-                      <option value="Annual">Annual</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <select
-                      className="w-full text-2xl mb-3"
-                      required
-                      onChange={(e) => {
-                        setSubject(e.target.value);
-                      }}
-                    >
-                      {/* Options for amount types */}
-                      <option disabled selected>
-                        Select Subject
-                      </option>
-                      <option value="Bangla">Bangla</option>
-                      <option value="English">English</option>
-                      <option value="Math">Math</option>
-                      <option value="Since">Since</option>
-                    </select>
-                  </div>
-                  <div>
-                    <input
-                      className="w-full text-2xl mb-3"
-                      placeholder="Enter the result"
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Check if the value is a number and between 0 and 100
-                        if (
-                          value === "" ||
-                          (Number(value) >= 0 && Number(value) <= 100)
-                        ) {
-                          setResult(value);
-                        } else {
-                          alert("Please enter a value between 0 and 100");
-                        }
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <input
-                      className="w-full text-2xl mb-3"
-                      placeholder="Enter the result"
-                      // type="number"
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Check if the value is a number and between 0 and 100
-                        if (
-                          value === "" ||
-                          (Number(value) >= 0 && Number(value) <= 100)
-                        ) {
-                          setFullMark(value);
-                        } else {
-                          alert("Please enter a value between 0 and 100");
-                        }
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <p className="text-white">{success}</p>
-                  </div>
-                </form>
-                <p className="text-red-500">{error}</p>
-                <div className="flex justify-between">
-                  <button
-                    className="btn btn-success mt-3 px-9"
-                    onClick={() => handleResult(student._id)}
-                  >
-                    {loading ? "Result addeding...." : "Add Result"}
-                  </button>
-                  <button
-                    className="btn btn-warning mt-3 px-9"
-                    onClick={handleCloseResultModal}
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            </ReactModal>
+              ➕ Add Due Payment
+            </button>
+
+            {totalAmount > 0 && (
+              <button
+                className="btn bg-yellow-500 text-white"
+                onClick={handleOpenModal}
+              >
+                💰 Receive Payment (Paid)
+              </button>
+            )}
           </div>
         )}
       </div>
-      <div>
-        <div className="overflow-x-auto rounded-lg shadow-md mt-10">
-          <h1 className="text-center md:text-2xl text-xl font-bold font-serif uppercase text-red-500">
-            Details about due_payment
-          </h1>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-green-400">
-              <tr>
-                <th className="px-6 py-3 text-left font-medium text-white border ">
-                  Take
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-white border ">
-                  Added For
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-white border">
-                  Add By
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-white border ">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-white border  sm:table-cell">
-                  Condition
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {reversedDuePayments?.map((payment, index) => (
-                <>
-                  {payment.isPaid == false && (
-                    <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {payment.amount}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {payment.amountType}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {payment.addedBy?.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {new Date(payment.date).toLocaleDateString("en-US", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-400 sm:table-cell">
-                        Due
-                      </td>
-                    </tr>
-                  )}
-                </>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="overflow-x-auto rounded-lg shadow-md mt-10">
-          <h1 className="text-center md:text-2xl text-xl font-bold font-serif uppercase text-green-500">
-            Details about Paid_payment
-          </h1>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-green-400 text-white border">
-              <tr>
-                <th className="px-6 py-3 text-left font-medium border">Date</th>
-                <th className="px-6 py-3 text-left font-medium border">For</th>
-                <th className="px-6 py-3 text-left font-medium border">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left font-medium border sm:table-cell text-sm">
-                  Accept By
-                </th>
-                <th className="px-6 py-3 text-left font-medium border">
-                  Condition
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {reversedPaidPayments?.map((payment, index) => (
-                <>
-                  {payment.isPaid == true && (
-                    <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {new Date(payment.date).toLocaleDateString("en-US", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {payment.amountType}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {payment.amount}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {payment.addedBy?.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-400 sm:table-cell">
-                        Paid
-                      </td>
-                    </tr>
-                  )}
-                </>
-              ))}
-            </tbody>
-          </table>
-        </div>
 
-        <div className="overflow-x-auto rounded-lg shadow-md mt-10">
-          <h1 className="text-center md:text-2xl text-xl font-bold font-serif uppercase text-red-500">
-            All Results
-          </h1>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-green-400">
-              <tr>
-                <th className="px-6 py-3 text-left font-medium text-white border ">
-                  Exam Type
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-white border ">
-                  Subject
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-white border">
-                  Result
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-white border ">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left font-medium text-white border ">
-                  Upload By
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {student?.result
-                ?.slice()
-                .reverse()
-                .map((results, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                      {results.examType}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                      {results.subject}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                      {results.result + " " + "/" + " " + results.mark}
-                    </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                      {new Date(results.date).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                      {results.addedBy.name}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+      {/* ================= ADD RESULT ================= */}
+      {["teacher", "principle"].includes(user?.role) && (
+        <div className="max-w-xl mx-auto">
+          <button
+            className="btn w-full bg-indigo-600 text-white"
+            onClick={handleOpenResultModal}
+          >
+            📘 Add Exam Result
+          </button>
         </div>
+      )}
+
+      {/* ================= DUE PAYMENT TABLE ================= */}
+      <div className="overflow-x-auto bg-white rounded-xl shadow-md p-4">
+        <h2 className="text-xl font-bold text-red-500 mb-3">
+          Due Payment Details
+        </h2>
+        <table className="table w-full">
+          <thead className="bg-green-500 text-white">
+            <tr>
+              <th>Amount</th>
+              <th>For</th>
+              <th>Added By</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reversedDuePayments
+              .filter((p) => !p.isPaid)
+              .map((p, i) => (
+                <tr key={i}>
+                  <td>{p.amount}</td>
+                  <td>{p.amountType}</td>
+                  <td>{p.addedBy?.name}</td>
+                  <td>{new Date(p.date).toLocaleDateString()}</td>
+                  <td className="text-yellow-500 font-bold">Due</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ================= PAID PAYMENT TABLE ================= */}
+      <div className="overflow-x-auto bg-white rounded-xl shadow-md p-4">
+        <h2 className="text-xl font-bold text-green-500 mb-3">
+          Paid Payment History
+        </h2>
+        <table className="table w-full">
+          <thead className="bg-green-600 text-white">
+            <tr>
+              <th>Date</th>
+              <th>For</th>
+              <th>Amount</th>
+              <th>Accepted By</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reversedPaidPayments
+              .filter((p) => p.isPaid)
+              .map((p, i) => (
+                <tr key={i}>
+                  <td>{new Date(p.date).toLocaleDateString()}</td>
+                  <td>{p.amountType}</td>
+                  <td>{p.amount}</td>
+                  <td>{p.addedBy?.name}</td>
+                  <td className="text-green-500 font-bold">Paid</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ================= RESULT TABLE ================= */}
+      <div className="overflow-x-auto bg-white rounded-xl shadow-md p-4">
+        <h2 className="text-xl font-bold text-indigo-600 mb-3">
+          Exam Results
+        </h2>
+        <table className="table w-full">
+          <thead className="bg-indigo-600 text-white">
+            <tr>
+              <th>Exam</th>
+              <th>Subject</th>
+              <th>Marks</th>
+              <th>Date</th>
+              <th>Uploaded By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {student?.result
+              ?.slice()
+              .reverse()
+              .map((r, i) => (
+                <tr key={i}>
+                  <td>{r.examType}</td>
+                  <td>{r.subject}</td>
+                  <td>{r.result} / {r.mark}</td>
+                  <td>{new Date(r.date).toLocaleDateString()}</td>
+                  <td>{r.addedBy?.name}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
