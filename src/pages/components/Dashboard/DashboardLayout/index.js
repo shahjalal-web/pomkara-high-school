@@ -45,7 +45,7 @@ const DashboardLayout = ({ children }) => {
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex flex-col w-64 bg-white shadow-xl min-h-screen sticky top-0">
           <div className="p-6 bg-green-600 text-white text-center font-bold text-xl">
-            Dashboard
+            <Link href={"/components/Dashboard"}>Dashboard</Link>
           </div>
 
           <ul className="p-4 space-y-2">
@@ -63,10 +63,10 @@ const DashboardLayout = ({ children }) => {
         </aside>
 
         {/* Mobile Header */}
-        <div className="md:hidden w-full bg-white shadow-md fixed top-0 left-0 z-50">
+        <div className="md:hidden w-full bg-white shadow-md fixed mt-4 left-0 z-50">
           <div className="flex items-center justify-between px-4 py-3">
             <h2 className="font-bold text-green-700 text-lg">
-              Dashboard
+              <Link href={"/components/Dashboard"}>Dashboard</Link>
             </h2>
             <button onClick={toggleMenu}>
               {menuOpen ? (
