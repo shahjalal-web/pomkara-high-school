@@ -5,130 +5,102 @@ import { FaBars, FaTimes } from "react-icons/fa";
 const DashboardLayout = ({ children }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const offMenu = () => setMenuOpen(false);
 
-  const offMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const menuItems = [
+    {
+      name: "Teacher",
+      link: "/components/Dashboard/dComponents/teacher",
+    },
+    {
+      name: "Faculty",
+      link: "/components/Dashboard/dComponents/faculty",
+    },
+    {
+      name: "All Students",
+      link: "/components/Dashboard/dComponents/student",
+    },
+    {
+      name: "Add Student",
+      link: "/components/Dashboard/dComponents/student/addStudent",
+    },
+    {
+      name: "Notice",
+      link: "/components/Dashboard/dComponents/notice",
+    },
+    {
+      name: "Result",
+      link: "/components/Dashboard/dComponents/result",
+    },
+    {
+      name: "Add Money",
+      link: "/components/Dashboard/dComponents/addMoney",
+    },
+  ];
 
   return (
-    <div className="max-w-[1200px] mx-auto min-h-screen">
-      <div className="md:flex block">
-        <div className="w-52 shadow-md p-2 min-h-screen hidden md:block">
-          <ul>
-            <li className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3">
-              <Link href={"/components/Dashboard/dComponents/teacher"}>
-                Teacher
-              </Link>
-            </li>
-            <li className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3">
-              <Link href={"/components/Dashboard/dComponents/faculty"}>
-                Faculty
-              </Link>
-            </li>
-            <li className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3">
-              <Link href={"/components/Dashboard/dComponents/student"}>
-                All student
-              </Link>
-            </li>
-            <li className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3">
-              <Link
-                href={"/components/Dashboard/dComponents/student/addStudent"}
-              >
-                Add student
-              </Link>
-            </li>
-            <li className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3">
-              <Link href={"/components/Dashboard/dComponents/notice"}>
-                notice
-              </Link>
-            </li>
-            <li className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3">
-              <Link href={"/components/Dashboard/dComponents/result"}>
-                result
-              </Link>
-            </li>
-            <li className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3">
-              <Link href={"/components/Dashboard/dComponents/addMoney"}>
-                Add Money
-              </Link>
-            </li>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-[1400px] mx-auto flex">
+        {/* Desktop Sidebar */}
+        <aside className="hidden md:flex flex-col w-64 bg-white shadow-xl min-h-screen sticky top-0">
+          <div className="p-6 bg-green-600 text-white text-center font-bold text-xl">
+            Dashboard
+          </div>
+
+          <ul className="p-4 space-y-2">
+            {menuItems.map((item) => (
+              <li key={item.name}>
+                <Link
+                  href={item.link}
+                  className="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-green-100 hover:text-green-700 transition"
+                >
+                  {item.name}
+                </Link>
+              </li>
+            ))}
           </ul>
-        </div>
-        <div className="w-full md:hidden block">
-          <button onClick={toggleMenu}>
-            {menuOpen ? (
-              <FaTimes className="text-3xl" />
-            ) : (
-              <FaBars className="text-3xl" />
-            )}
-          </button>
+        </aside>
+
+        {/* Mobile Header */}
+        <div className="md:hidden w-full bg-white shadow-md fixed top-0 left-0 z-50">
+          <div className="flex items-center justify-between px-4 py-3">
+            <h2 className="font-bold text-green-700 text-lg">
+              Dashboard
+            </h2>
+            <button onClick={toggleMenu}>
+              {menuOpen ? (
+                <FaTimes className="text-2xl text-green-700" />
+              ) : (
+                <FaBars className="text-2xl text-green-700" />
+              )}
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
           {menuOpen && (
-            <ul className="shadow-md p-2">
-              <Link href={"/components/Dashboard/dComponents/teacher"}>
-                <li
-                  onClick={offMenu}
-                  className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3"
-                >
-                  Teacher
-                </li>
-              </Link>
-              <Link href={"/components/Dashboard/dComponents/faculty"}>
-                <li
-                  onClick={offMenu}
-                  className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3"
-                >
-                  Faculty
-                </li>
-              </Link>
-              <Link href={"/components/Dashboard/dComponents/student"}>
-                <li
-                  onClick={offMenu}
-                  className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3"
-                >
-                  All student
-                </li>
-              </Link>
-              <Link
-                href={"/components/Dashboard/dComponents/student/addStudent"}
-              >
-                <li
-                  onClick={offMenu}
-                  className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3"
-                >
-                  Add Student
-                </li>
-              </Link>
-              <Link href={"/components/Dashboard/dComponents/notice"}>
-                <li
-                  onClick={offMenu}
-                  className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3"
-                >
-                  notice
-                </li>
-              </Link>
-              <Link href={"/components/Dashboard/dComponents/result"}>
-                <li
-                  onClick={offMenu}
-                  className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3"
-                >
-                  result
-                </li>
-              </Link>
-              <Link href={"/components/Dashboard/dComponents/addMoney"}>
-                <li
-                  onClick={offMenu}
-                  className="text-white text-lg mr-2 uppercase font-serif bg-green-500 text-center mb-2 p-3"
-                >
-                  Add Money
-                </li>
-              </Link>
-            </ul>
+            <div className="bg-white shadow-lg border-t">
+              <ul className="p-4 space-y-2">
+                {menuItems.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.link}
+                      onClick={offMenu}
+                      className="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-green-100 hover:text-green-700 transition"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
-        <div className="w-full">{children}</div>
+
+        {/* Content */}
+        <main className="flex-1 p-4 md:p-8 mt-14 md:mt-0">
+          {children}
+        </main>
       </div>
     </div>
   );

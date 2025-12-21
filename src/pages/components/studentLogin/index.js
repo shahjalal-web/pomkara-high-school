@@ -81,7 +81,7 @@ const StudentLogin = () => {
                   message: "this field not contain spaces",
                 },
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.class && (
               <p className="text-red-500 text-sm mt-1">
@@ -102,7 +102,7 @@ const StudentLogin = () => {
                   message: "this field not contain spaces",
                 },
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.class_role && (
               <p className="text-red-500 text-sm mt-1">
@@ -124,7 +124,7 @@ const StudentLogin = () => {
                     "number must start with 01 and be exactly 11 digits long",
                 },
               })}
-              className="input input-bordered w-full"
+              className="input input-bordered bg-white text-black w-full"
             />
             {errors.number && (
               <p className="text-red-500 text-sm mt-1">
@@ -136,7 +136,7 @@ const StudentLogin = () => {
           <div className="relative w-full">
             <label>Password</label>
             <input
-              className="input input-bordered border-green-500 mb-5 w-full pr-10" // Added padding to the right for the icon
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full pr-10" // Added padding to the right for the icon
               {...register("password", { required: "Password is required" })}
               placeholder="Enter your Password"
               name="password"

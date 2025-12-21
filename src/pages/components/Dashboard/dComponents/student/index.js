@@ -211,7 +211,7 @@ const Student = () => {
     <div>
       <div>
         <select
-          className="input input-bordered border-green-500 mb-5 w-full mt-3"
+          className="input input-bordered border-green-500 mb-5 w-full mt-3 bg-white text-black"
           required
           {...register("targeted_class")}
           onChange={handleClassChange}

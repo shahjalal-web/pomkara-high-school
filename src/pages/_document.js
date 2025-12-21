@@ -20,7 +20,7 @@ export default function Document() {
           }}
         />
       </Head>
-      <body>
+      <body className="text-black">
         <Main />
         <NextScript />
       </body>

@@ -48,7 +48,7 @@ const Result = () => {
 
   if (result.length == 0) {
     return (
-      <div className="text-center text-2xl font-serif uppercase mt-3">
+      <div className="text-center text-2xl font-serif uppercase mt-3 text-green-400">
         there are no results here for now
       </div>
     );

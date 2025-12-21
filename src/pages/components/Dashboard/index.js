@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "./DashboardLayout";
-import { FaArrowAltCircleUp, FaPen, FaTrash } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import { useRouter } from "next/router";
 
 const PrincipleDashboard = () => {
@@ -9,6 +9,7 @@ const PrincipleDashboard = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const userData = JSON.parse(localStorage.getItem("user"));
@@ -26,125 +27,111 @@ const PrincipleDashboard = () => {
       const response = await fetch(
         `https://pomkara-high-school-server.vercel.app/students/search/${searchKey}`
       );
-      //console.log(searchKey);
 
       if (response.ok) {
         const data = await response.json();
         setSearchResults(data);
-        setLoading(false);
       } else {
-        setLoading(false);
         alert("No students match with your search");
         setSearchResults([]);
       }
     } catch (error) {
-      setLoading(false);
       console.error("Error fetching students:", error);
       alert("An error occurred while searching.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-center mt-10 mb-3 bg-gray-100">
-        <div className="bg-white shadow-lg rounded-lg p-6 max-w-md mx-auto text-center sm:p-8">
-          <h1 className="text-2xl sm:text-3xl font-bold  mb-4">
-            Welcome to Your Dashboard!
-          </h1>
-          <p className=" mb-4 sm:mb-6">
-            Manage all the features of the Pomkara Siddikur Rahman & Hakim High
-            School website from here.
-          </p>
-          <label className="block  font-medium mb-2">
-            Search student by name or role
-          </label>
-          <div className="flex flex-col sm:flex-row items-center sm:justify-center">
-            <input
-              type="text"
-              value={searchKey}
-              onChange={(e) => setSearchKey(e.target.value)}
-              onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault(); // Block form submit or reload
-                  handleSearch();
-                }
-              }}
-              placeholder="Enter search term"
-              className="border border-gray-300 rounded px-3 py-2 mb-3 sm:mb-0 sm:mr-2 w-full sm:w-auto"
-            />
-            <button
-              onClick={handleSearch}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded w-full sm:w-auto"
-            >
-              {loading ? "Searching..." : "Search"}
-            </button>
-          </div>
+    <div className="p-4 md:p-8">
+      {/* Header Card */}
+      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-10 mb-10">
+        <h1 className="text-2xl md:text-3xl font-bold text-center text-green-700 mb-3">
+          Teachers Dashboard
+        </h1>
+        <p className="text-center text-gray-600 mb-8">
+          Manage students and school information from one place
+        </p>
+
+        {/* Search */}
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <input
+            type="text"
+            value={searchKey}
+            onChange={(e) => setSearchKey(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSearch();
+              }
+            }}
+            placeholder="Search by student name or role"
+            className="w-full md:flex-1 input input-bordered border-green-400 focus:border-green-600 placeholder:text-white placeholder:bg-black text-white"
+          />
+          <button
+            onClick={handleSearch}
+            className="btn bg-green-600 hover:bg-green-700 text-white px-8"
+          >
+            {loading ? "Searching..." : "Search"}
+          </button>
         </div>
       </div>
+
+      {/* Loader */}
       {loading && (
-        <>
-          <div className="mt-5 text-center">
-            <span className="loading loading-spinner text-primary"></span>
-            <span className="loading loading-spinner text-secondary"></span>
-            <span className="loading loading-spinner text-accent"></span>
-            <span className="loading loading-spinner text-neutral"></span>
-            <span className="loading loading-spinner text-info"></span>
-            <span className="loading loading-spinner text-success"></span>
-            <span className="loading loading-spinner text-warning"></span>
-            <span className="loading loading-spinner text-error"></span>
-          </div>
-        </>
+        <div className="flex justify-center my-10">
+          <span className="loading loading-spinner loading-lg text-green-600"></span>
+        </div>
       )}
+
+      {/* Table */}
       {searchResults.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full border-collapse border border-green-500">
-            <thead>
-              <tr className="bg-green-500 text-white">
-                <th className="border border-green-500 px-4 py-2">Name</th>
-                <th className="border border-green-500 px-4 py-2">Class</th>
-                <th className="border border-green-500 px-4 py-2">
-                  Class Role
-                </th>
-                <th className="border border-green-500 px-4 py-2">
-                  Due Payment
-                </th>
-                <th className="border border-green-500 px-4 py-2">Details</th>
+        <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-x-auto">
+          <table className="table w-full">
+            <thead className="bg-green-600 text-white">
+              <tr>
+                <th className="text-center">Name</th>
+                <th className="text-center">Class</th>
+                <th className="text-center">Class Roll</th>
+                <th className="text-center">Due Payment</th>
+                <th className="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
-              {searchResults.map((student) => (
-                <tr key={student._id} className="hover:bg-green-100">
-                  <td className="border border-green-500 px-1 py-2 text-center">
-                    {student.name}
-                  </td>
-                  <td className="border border-green-500 px-1 py-2 text-center">
-                    {student.class}
-                  </td>
-                  <td className="border border-green-500 px-1 py-2 text-center">
-                    {student.class_role}
-                  </td>
-                  <td className="border border-green-500 px-1 py-2 text-center">
-                    {(
-                      student.due_payment.reduce((acc, curr) => {
-                        const amount = parseFloat(curr.amount) || 0;
-                        return acc + amount;
-                      }, 0) -
-                      student.paid_payment.reduce((acc, curr) => {
-                        const amount = parseFloat(curr.amount) || 0;
-                        return acc + amount;
-                      }, 0)
-                    ).toFixed(2)}
-                  </td>
-                  <td className="border border-green-500 px-1 py-2 text-center text-green-600">
-                    <button
-                      onClick={() => handleUpdateClick(student._id)}
-                      className="btn btn-outline text-green-500 px-5"
-                    >
-                      <FaPen />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {searchResults.map((student) => {
+                const due =
+                  student.due_payment.reduce((acc, curr) => {
+                    const amount = parseFloat(curr.amount) || 0;
+                    return acc + amount;
+                  }, 0) -
+                  student.paid_payment.reduce((acc, curr) => {
+                    const amount = parseFloat(curr.amount) || 0;
+                    return acc + amount;
+                  }, 0);
+
+                return (
+                  <tr
+                    key={student._id}
+                    className="hover:bg-green-50 transition"
+                  >
+                    <td className="text-center font-medium">{student.name}</td>
+                    <td className="text-center">{student.class}</td>
+                    <td className="text-center">{student.class_role}</td>
+                    <td className="text-center font-semibold text-red-600">
+                      {due.toFixed(2)}
+                    </td>
+                    <td className="text-center">
+                      <button
+                        onClick={() => handleUpdateClick(student._id)}
+                        className="btn btn-sm btn-outline border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+                      >
+                        <FaPen />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

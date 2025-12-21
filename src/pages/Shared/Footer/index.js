@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Footer = () => {
   const [hoveredIcon, setHoveredIcon] = useState(null);
@@ -117,9 +119,11 @@ const Footer = () => {
                     />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold">Pumkara Chiddikur Rahman & Hakim</h3>
+                    <h3 className="text-xl font-bold">
+                      Pumkara Chiddikur Rahman & Hakim
+                    </h3>
                     <p className="text-blue-200 text-sm">
-                      Higher Secondary School 
+                      Higher Secondary School
                     </p>
                   </div>
                 </div>
@@ -241,7 +245,7 @@ const Footer = () => {
             <div className="container mx-auto px-4 py-6">
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-center md:text-left">
                 <div className="text-gray-300 text-sm animate-fadeInLeft">
-                  © 2025 Pomkara Chiddikur Rahman &  Hakim High School. All
+                  © 2025 Pomkara Chiddikur Rahman & Hakim High School. All
                   rights reserved.
                 </div>
                 <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-300 animate-fadeInRight">
@@ -260,6 +264,16 @@ const Footer = () => {
           </div>
         </div>
       </footer>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   );
 };
