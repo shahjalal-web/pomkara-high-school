@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
@@ -6,7 +7,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Profile = () => {
   const [student, setStudent] = useState(null);
-  const [showModal, setShowModal] = useState(false); // For handling modal visibility
+  const [showModal, setShowModal] = useState(false);
   const { register, handleSubmit, reset } = useForm();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -18,8 +19,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const studentData = JSON.parse(localStorage.getItem("student"));
-      setStudent(studentData);
+      setStudent(JSON.parse(localStorage.getItem("student")));
     }
   }, []);
 
@@ -27,61 +27,31 @@ const Profile = () => {
 
   useEffect(() => {
     if (id) {
-      const fetchStudent = async () => {
-        try {
-          const response = await fetch(
-            `https://pomkara-high-school-server.vercel.app/students/${id}`
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch student details");
-          }
-          const data = await response.json();
-          setStudent(data);
-        } catch (error) {
-          console.error("Error fetching student details:", error);
-        }
-      };
-
-      fetchStudent();
+      fetch(`https://pomkara-high-school-server.vercel.app/students/${id}`)
+        .then((res) => res.json())
+        .then((data) => setStudent(data))
+        .catch(() => {});
     }
   }, [id]);
 
-  const all_due_payment = student?.due_payment;
-  const reversedDuePayments =
-    all_due_payment?.length > 0 ? all_due_payment.slice().reverse() : [];
+  const reversedDuePayments = student?.due_payment?.slice().reverse() || [];
+  const reversedPaidPayments = student?.paid_payment?.slice().reverse() || [];
 
-  const all_paid_payment = student?.paid_payment;
-  const reversedPaidPayments =
-    all_paid_payment?.length > 0 ? all_paid_payment.slice().reverse() : [];
+  const totalDue =
+    student?.due_payment?.reduce((a, p) => a + Number(p.amount), 0) || 0;
+  const totalPaid =
+    student?.paid_payment?.reduce((a, p) => a + Number(p.amount), 0) || 0;
 
-  const calculateDueTotal = (payments) => {
-    return payments.reduce((acc, payment) => acc + Number(payment.amount), 0);
-  };
-
-  const calculatePaidTotal = (payments) => {
-    return payments.reduce((acc, payment) => acc + Number(payment.amount), 0);
-  };
-
-  const totalDueAmount = student?.due_payment
-    ? calculateDueTotal(student.due_payment)
-    : 0;
-
-  const totalPaidAmount = student?.paid_payment
-    ? calculatePaidTotal(student.paid_payment)
-    : 0;
-
-  const totalAmount = totalDueAmount - totalPaidAmount;
+  const totalAmount = totalDue - totalPaid;
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await fetch(
+      const res = await fetch(
         `https://pomkara-high-school-server.vercel.app/students/changePassword/${id}`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             oldPassword: data.oldPassword,
             newPassword: data.newPassword,
@@ -89,44 +59,34 @@ const Profile = () => {
         }
       );
 
-      if (!response.ok) {
-        setLoading(false);
-        throw new Error("Failed to change password");
-      }
+      if (!res.ok) throw new Error();
 
-      const result = await response.json();
-      setLoading(false);
-      router.reload();
-      alert(result.message || "Password changed successfully");
+      alert("Password changed successfully");
       reset();
       setShowModal(false);
-    } catch (error) {
+      router.reload();
+    } catch {
+      alert("Error changing password");
+    } finally {
       setLoading(false);
-      console.error("Error changing password:", error);
-      alert("Error changing password. Please try again.");
     }
   };
 
   if (!student) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100 text-center p-4">
-        <div className="bg-white shadow-lg rounded-lg p-6 max-w-md mx-auto">
-          <p className="text-2xl font-serif text-red-500 mb-4">
-            You cannot see anything on this page after sign out
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+          <p className="text-red-500 text-xl mb-4">
+            You are not logged in
           </p>
-          <p className=" mb-4">Please go back to the home page.</p>
-          <Link
-            href="/"
-            className="inline-block bg-blue-500 text-white px-6 py-3 rounded-lg font-medium text-lg hover:bg-blue-600 transition"
-          >
+          <Link href="/" className="btn bg-blue-500 text-white mr-2">
             Home
           </Link>
-          <p className=" mb-4 mt-3">Or Login again.</p>
           <Link
             href="/components/studentLogin"
-            className="inline-block bg-blue-500 text-white px-6 py-3 rounded-lg font-medium text-lg hover:bg-blue-600 transition"
+            className="btn bg-green-500 text-white"
           >
-            LogIn
+            Login
           </Link>
         </div>
       </div>
@@ -134,344 +94,200 @@ const Profile = () => {
   }
 
   return (
-    <div>
-      <div>
-        <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-          <div className="bg-blue-500 text-white text-center p-6 rounded-lg shadow-lg max-w-sm mx-auto">
-            <h2 className="text-2xl font-bold mb-2 transition-transform duration-300 hover:scale-105">
-              Name: {student.name}
-            </h2>
-            <p className="text-sm mb-4">
-              Password: {student.password || "No Password Provided"}
-            </p>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-red-500 text-white px-6 py-2 rounded-full transition-colors duration-300 hover:bg-red-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-            >
-              Change Password
-            </button>
-          </div>
+    <div className="p-4 md:p-10 space-y-10">
+      {/* Profile Card */}
+      <div className="max-w-lg mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl shadow-xl p-6 text-center">
+        <h2 className="text-2xl font-bold mb-2">{student.name}</h2>
+        <p className="text-sm mb-4 opacity-80">Class {student.class}</p>
+        <button
+          onClick={() => setShowModal(true)}
+          className="btn bg-red-500 hover:bg-red-600 text-white"
+        >
+          Change Password
+        </button>
+      </div>
 
-          {/* Modal for changing password */}
-          {showModal && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-                <h3 className="text-lg font-bold mb-4">Change Password</h3>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="mb-4">
-                    <div className="relative w-full">
-                      <input
-                        className="input input-bordered border-green-500 mb-5 w-full pr-10" // Added padding to the right for the icon
-                        {...register("oldPassword")}
-                        required
-                        placeholder="Enter your Old Password"
-                        name="oldPassword"
-                        type={showPassword ? "text" : "password"} // Toggle input type
-                      />
-                      <div
-                        className="absolute inset-y-0 right-3 flex items-center cursor-pointer mb-4"
-                        onClick={togglePasswordVisibility}
-                      >
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="relative w-full">
-                    <input
-                      className="input input-bordered border-green-500 mb-5 w-full pr-10" // Added padding to the right for the icon
-                      {...register("newPassword")}
-                      required
-                      placeholder="Enter your New Password"
-                      name="newPassword"
-                      type={showPassword ? "text" : "password"} // Toggle input type
-                    />
-                    <div
-                      className="absolute inset-y-0 right-3 flex items-center cursor-pointer mb-4"
-                      onClick={togglePasswordVisibility}
-                    >
-                      {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </div>
-                  </div>
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setShowModal(false)}
-                      className="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2 hover:bg-gray-600 transition"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-                    >
-                      {loading ? "changing" : "change"}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold  mb-4 text-center">
-            Student Details
-          </h2>
-          <table className="md:w-1/3 w-full m-2 shadow-xl shadow-green-200 hover:shadow-green-400 mx-auto border divide-gray-200 ">
-            <tbody className=" divide-gray-200">
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Class
-                </td>
-                <td className="px-6 border border-green-400 py-3 ">
-                  {student?.class}
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Class Role
-                </td>
-                <td className="px-6 border border-green-400 py-3 ">
-                  {student?.class_role}
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Number
-                </td>
-                <td className="px-6 border border-green-400 py-3 ">
-                  {student?.number}
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Fathers Name
-                </td>
-                <td className="px-6 border border-green-400 py-3 ">
-                  {student?.fathers_name}
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Fathers Number
-                </td>
-                <td className="px-6 border border-green-400 py-3 ">
-                  {student?.fathers_number}
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Mothers Name
-                </td>
-                <td className="px-6 border border-green-400 py-3 ">
-                  {student?.mothers_name}
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Mothers Number
-                </td>
-                <td className="px-6 border border-green-400 py-3 ">
-                  {student?.mothers_number}
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Admission Date
-                </td>
-                <td className="px-6 border border-green-400 py-3 ">
-                  {new Date(student?.createdAt).toLocaleString()}
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Creator
-                </td>
-                <td className="px-6 border border-green-400 py-3 ">
-                  {student?.creator?.name}
-                </td>
-              </tr>
-
-              <tr>
-                <td className="px-6 border border-green-400 py-3 font-semibold ">
-                  Total Due Payment
-                </td>
-                <td className="px-6 border border-green-400 py-3 text-red-500 font-bold">
+      {/* Student Info */}
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-center mb-4">
+          Student Information
+        </h3>
+        <table className="table w-full">
+          <tbody>
+            {[
+              ["Class", student.class],
+              ["Class Roll", student.class_role],
+              ["Number", student.number],
+              ["Father's Name", student.fathers_name],
+              ["Father's Number", student.fathers_number],
+              ["Mother's Name", student.mothers_name],
+              ["Mother's Number", student.mothers_number],
+              [
+                "Admission Date",
+                new Date(student.createdAt).toLocaleDateString(),
+              ],
+              ["Creator", student.creator?.name],
+              [
+                "Total Due",
+                <span className="text-red-500 font-bold">
                   {totalAmount} Taka
-                </td>
+                </span>,
+              ],
+            ].map(([label, value]) => (
+              <tr key={label}>
+                <td className="font-semibold">{label}</td>
+                <td>{value}</td>
               </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Results */}
+      <div className="max-w-6xl mx-auto space-y-10">
+        {/* Results Table */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
+          <h3 className="text-center text-xl font-bold text-red-500 p-4">
+            All Results
+          </h3>
+          <table className="table w-full">
+            <thead className="bg-green-500 text-white">
+              <tr>
+                <th>Exam</th>
+                <th>Subject</th>
+                <th>Result</th>
+                <th>Date</th>
+                <th>Added By</th>
+              </tr>
+            </thead>
+            <tbody>
+              {student.result
+                ?.slice()
+                .reverse()
+                .map((r, i) => (
+                  <tr key={i}>
+                    <td>{r.examType}</td>
+                    <td>{r.subject}</td>
+                    <td>{r.result} / {r.mark}</td>
+                    <td>{new Date(r.date).toLocaleDateString()}</td>
+                    <td>{r.addedBy?.name}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
 
-        <div className="max-w-[1000px] mx-auto">
-          <div className="overflow-x-auto rounded-lg shadow-md mt-10">
-            <h1 className="text-center md:text-2xl text-xl font-bold font-serif uppercase text-red-500">
-              All Results
-            </h1>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-green-400">
-                <tr>
-                  <th className="px-6 py-3 text-left font-medium text-white border ">
-                    Exam Type
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-white border ">
-                    Subject
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-white border">
-                    Result
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-white border ">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-white border ">
-                    Upload By
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {student?.result
-                  ?.slice()
-                  .reverse()
-                  .map((results, index) => (
-                    <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {results.examType}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {results.subject}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {results.result + " " + "/" + " " + results.mark}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {new Date(results.date).toLocaleDateString("en-US", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                        {results.addedBy.name}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="overflow-x-auto rounded-lg shadow-md mt-10">
-            <h1 className="text-center md:text-2xl text-xl font-bold font-serif uppercase text-red-500">
-              Details about Due_payment
-            </h1>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-yellow-400">
-                <tr>
-                  <th className="px-6 py-3 text-left font-medium text-white border ">
-                    Take
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-white border ">
-                    Added For
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-white border">
-                    Add By
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-white border ">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-white border  sm:table-cell">
-                    Condition
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {reversedDuePayments?.map((payment, index) => (
-                  <>
-                    {payment.isPaid == false && (
-                      <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                          {payment.amount}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                          {payment.amountType}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                          {payment.addedBy?.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                          {new Date(payment.date).toLocaleDateString("en-US", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-yellow-400 sm:table-cell">
-                          Due
-                        </td>
-                      </tr>
-                    )}
-                  </>
+        {/* Due Payments */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
+          <h3 className="text-center text-xl font-bold text-yellow-500 p-4">
+            Due Payments
+          </h3>
+          <table className="table w-full">
+            <thead className="bg-yellow-400 text-white">
+              <tr>
+                <th>Amount</th>
+                <th>For</th>
+                <th>Added By</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reversedDuePayments
+                .filter((p) => !p.isPaid)
+                .map((p, i) => (
+                  <tr key={i}>
+                    <td>{p.amount}</td>
+                    <td>{p.amountType}</td>
+                    <td>{p.addedBy?.name}</td>
+                    <td>{new Date(p.date).toLocaleDateString()}</td>
+                    <td className="text-yellow-500 font-bold">Due</td>
+                  </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
+            </tbody>
+          </table>
+        </div>
 
-          <div className="overflow-x-auto rounded-lg shadow-md mt-10">
-            <h1 className="text-center md:text-2xl text-xl font-bold font-serif uppercase text-green-500">
-              Details about Paid_payment
-            </h1>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-green-400 text-white border">
-                <tr>
-                  <th className="px-6 py-3 text-left font-medium border">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium border">
-                    For
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium border">
-                    Amount
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium border sm:table-cell text-sm">
-                    Accept By
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium border">
-                    Condition
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {reversedPaidPayments?.map((payment, index) => (
-                  <>
-                    {payment.isPaid == true && (
-                      <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                          {new Date(payment.date).toLocaleDateString("en-US", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                          {payment.amountType}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                          {payment.amount}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium border">
-                          {payment.addedBy?.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-400 sm:table-cell">
-                          Paid
-                        </td>
-                      </tr>
-                    )}
-                  </>
+        {/* Paid Payments */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
+          <h3 className="text-center text-xl font-bold text-green-500 p-4">
+            Paid Payments
+          </h3>
+          <table className="table w-full">
+            <thead className="bg-green-500 text-white">
+              <tr>
+                <th>Date</th>
+                <th>For</th>
+                <th>Amount</th>
+                <th>Accepted By</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reversedPaidPayments
+                .filter((p) => p.isPaid)
+                .map((p, i) => (
+                  <tr key={i}>
+                    <td>{new Date(p.date).toLocaleDateString()}</td>
+                    <td>{p.amountType}</td>
+                    <td>{p.amount}</td>
+                    <td>{p.addedBy?.name}</td>
+                    <td className="text-green-500 font-bold">Paid</td>
+                  </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
+            </tbody>
+          </table>
         </div>
       </div>
+
+      {/* Change Password Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
+            <h3 className="text-lg font-bold mb-4">Change Password</h3>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {["oldPassword", "newPassword"].map((field) => (
+                <div className="relative" key={field}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder={
+                      field === "oldPassword"
+                        ? "Old Password"
+                        : "New Password"
+                    }
+                    {...register(field)}
+                    required
+                    className="input input-bordered w-full pr-12"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-3 top-3"
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              ))}
+
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn bg-gray-400 text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn bg-blue-500 text-white"
+                >
+                  {loading ? "Changing..." : "Change"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
