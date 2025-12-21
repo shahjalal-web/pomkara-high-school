@@ -265,7 +265,7 @@ const StudentDetails = () => {
   }
 
   return (
-        <div className="space-y-10 p-4 md:p-8">
+    <div className="space-y-10 p-4 md:p-8">
       {/* ================= Student Card ================= */}
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6">
         <h1 className="text-3xl font-bold text-center text-green-600 mb-6">
@@ -273,14 +273,30 @@ const StudentDetails = () => {
         </h1>
 
         <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <p><b>Name:</b> {student.name}</p>
-          <p><b>Phone:</b> {student.number}</p>
-          <p><b>Class:</b> {student.class}</p>
-          <p><b>Class Roll:</b> {student.class_role}</p>
-          <p><b>Father:</b> {student.fathers_name}</p>
-          <p><b>Father Phone:</b> {student.fathers_number}</p>
-          <p><b>Mother:</b> {student.mothers_name}</p>
-          <p><b>Mother Phone:</b> {student.mothers_number}</p>
+          <p>
+            <b>Name:</b> {student.name}
+          </p>
+          <p>
+            <b>Phone:</b> {student.number}
+          </p>
+          <p>
+            <b>Class:</b> {student.class}
+          </p>
+          <p>
+            <b>Class Roll:</b> {student.class_role}
+          </p>
+          <p>
+            <b>Father:</b> {student.fathers_name}
+          </p>
+          <p>
+            <b>Father Phone:</b> {student.fathers_number}
+          </p>
+          <p>
+            <b>Mother:</b> {student.mothers_name}
+          </p>
+          <p>
+            <b>Mother Phone:</b> {student.mothers_number}
+          </p>
           <p className="text-red-500 font-bold">
             Total Due: {totalAmount} Taka
           </p>
@@ -395,9 +411,7 @@ const StudentDetails = () => {
 
       {/* ================= RESULT TABLE ================= */}
       <div className="overflow-x-auto bg-white rounded-xl shadow-md p-4">
-        <h2 className="text-xl font-bold text-indigo-600 mb-3">
-          Exam Results
-        </h2>
+        <h2 className="text-xl font-bold text-indigo-600 mb-3">Exam Results</h2>
         <table className="table w-full">
           <thead className="bg-indigo-600 text-white">
             <tr>
@@ -416,7 +430,9 @@ const StudentDetails = () => {
                 <tr key={i}>
                   <td>{r.examType}</td>
                   <td>{r.subject}</td>
-                  <td>{r.result} / {r.mark}</td>
+                  <td>
+                    {r.result} / {r.mark}
+                  </td>
                   <td>{new Date(r.date).toLocaleDateString()}</td>
                   <td>{r.addedBy?.name}</td>
                 </tr>
@@ -424,6 +440,151 @@ const StudentDetails = () => {
           </tbody>
         </table>
       </div>
+
+      {/* ================= ADD DUE MODAL ================= */}
+<ReactModal
+  isOpen={showDueModal}
+  onRequestClose={handleDueModalClose}
+  className="max-w-md mx-auto mt-40 bg-white p-6 rounded-xl shadow-2xl"
+  overlayClassName="fixed inset-0 bg-black/50 z-50"
+>
+  <h2 className="text-xl font-bold mb-4 text-green-600">
+    Add Due Payment
+  </h2>
+
+  <select
+    className="select select-bordered bg-white text-black w-full mb-3"
+    onChange={(e) => setAmountType(e.target.value)}
+  >
+    <option disabled selected>
+      Select Fee Type
+    </option>
+    <option value="monthly_fee">Monthly Fee</option>
+    <option value="exam_fee">Exam Fee</option>
+    <option value="session_fee">Session Fee</option>
+    <option value="fine">Fine</option>
+  </select>
+
+  <input
+    type="number"
+    placeholder="Enter amount"
+    className="input input-bordered bg-white text-black w-full mb-3"
+    onChange={(e) => setAmount(e.target.value)}
+  />
+
+  {error && <p className="text-red-500 mb-2">{error}</p>}
+
+  <div className="flex justify-end gap-2">
+    <button className="btn" onClick={handleDueModalClose}>
+      Cancel
+    </button>
+    <button
+      className="btn bg-green-600 text-white"
+      onClick={() => handleAddAmount(student._id)}
+    >
+      Add Due
+    </button>
+  </div>
+</ReactModal>
+
+{/* ================= RECEIVE PAYMENT MODAL ================= */}
+<ReactModal
+  isOpen={showModal}
+  onRequestClose={handleCloseModal}
+  className="max-w-md mx-auto mt-40 bg-white p-6 rounded-xl shadow-2xl"
+  overlayClassName="fixed inset-0 bg-black/50 z-50"
+>
+  <h2 className="text-xl font-bold mb-4 text-yellow-600">
+    Receive Payment
+  </h2>
+
+  <select
+    className="select select-bordered bg-white text-black w-full mb-3"
+    onChange={(e) => setAmountType(e.target.value)}
+  >
+    <option disabled selected>
+      Select Payment Type
+    </option>
+    <option value="monthly_fee">Monthly Fee</option>
+    <option value="exam_fee">Exam Fee</option>
+    <option value="fine">Fine</option>
+  </select>
+
+  <input
+    type="number"
+    placeholder="Paid amount"
+    className="input input-bordered bg-white text-black w-full mb-3"
+    onChange={(e) => setAmount(e.target.value)}
+  />
+
+  {error && <p className="text-red-500 mb-2">{error}</p>}
+
+  <div className="flex justify-end gap-2">
+    <button className="btn" onClick={handleCloseModal}>
+      Cancel
+    </button>
+    <button
+      className="btn bg-yellow-500 text-white"
+      onClick={() => handleCutAmount(student._id)}
+    >
+      Confirm Payment
+    </button>
+  </div>
+</ReactModal>
+
+{/* ================= ADD RESULT MODAL ================= */}
+<ReactModal
+  isOpen={showResultModal}
+  onRequestClose={handleCloseResultModal}
+  className="max-w-lg mx-auto mt-20 bg-white p-6 rounded-xl shadow-2xl"
+  overlayClassName="fixed inset-0 bg-black/50 z-50"
+>
+  <h2 className="text-xl font-bold mb-4 text-indigo-600">
+    Add Exam Result
+  </h2>
+
+  <input
+    className="input input-bordered bg-white text-black w-full mb-2"
+    placeholder="Exam Type"
+    onChange={(e) => setExamType(e.target.value)}
+  />
+
+  <input
+    className="input input-bordered bg-white text-black w-full mb-2"
+    placeholder="Subject"
+    onChange={(e) => setSubject(e.target.value)}
+  />
+
+  <input
+    type="number"
+    className="input input-bordered bg-white text-black w-full mb-2"
+    placeholder="Obtained Marks"
+    onChange={(e) => setResult(e.target.value)}
+  />
+
+  <input
+    type="number"
+    className="input input-bordered bg-white text-black w-full mb-4"
+    placeholder="Full Marks"
+    onChange={(e) => setFullMark(e.target.value)}
+  />
+
+  {success && <p className="text-green-600 mb-2">{success}</p>}
+  {error && <p className="text-red-500 mb-2">{error}</p>}
+
+  <div className="flex justify-end gap-2">
+    <button className="btn" onClick={handleCloseResultModal}>
+      Cancel
+    </button>
+    <button
+      className="btn bg-indigo-600 text-white"
+      onClick={() => handleResult(student._id)}
+    >
+      {loading ? "Saving..." : "Add Result"}
+    </button>
+  </div>
+</ReactModal>
+
     </div>
   );
 };
