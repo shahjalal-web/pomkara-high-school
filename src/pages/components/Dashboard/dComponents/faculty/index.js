@@ -16,8 +16,7 @@ const Faculty = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const userData = JSON.parse(localStorage.getItem("user"));
-      setUser(userData);
+      setUser(JSON.parse(localStorage.getItem("user")));
     }
   }, []);
 
@@ -25,168 +24,161 @@ const Faculty = () => {
     dispatch(fetchFacultyData());
   }, [dispatch]);
 
-  const handleApprove = async (facultyId) => {
-    try {
-      dispatch(approveFaculty(facultyId)); // Approve the teacher and refresh the list
-      dispatch(fetchFacultyData());
-      dispatch(fetchFacultyData());
-    } catch (error) {
-      console.error("Error approving teacher:", error);
-    }
-  };
-
-  const handleUnApprove = async (teacherId) => {
-    try {
-      dispatch(unapproveFaculty(teacherId)); // Approve the teacher and refresh the list
-      dispatch(fetchFacultyData());
-    } catch (error) {
-      console.error("Error approving teacher:", error);
-    }
-  };
-
-  const handleDelete = async (teacherId) => {
-    dispatch(deletefaculty(teacherId));
+  const handleApprove = (id) => {
+    dispatch(approveFaculty(id));
     dispatch(fetchFacultyData());
   };
 
-  if (loading)
-    return (
-      <div className="mt-5 text-center">
-        <span className="loading loading-spinner text-primary"></span>
-        <span className="loading loading-spinner text-secondary"></span>
-        <span className="loading loading-spinner text-accent"></span>
-        <span className="loading loading-spinner text-neutral"></span>
-        <span className="loading loading-spinner text-info"></span>
-        <span className="loading loading-spinner text-success"></span>
-        <span className="loading loading-spinner text-warning"></span>
-        <span className="loading loading-spinner text-error"></span>
-      </div>
-    );
-  if (error) return <p>Error: {error}</p>;
+  const handleUnApprove = (id) => {
+    dispatch(unapproveFaculty(id));
+    dispatch(fetchFacultyData());
+  };
 
-  if (!user) {
+  const handleDelete = (id) => {
+    dispatch(deletefaculty(id));
+    dispatch(fetchFacultyData());
+  };
+
+  /* ---------- STATES ---------- */
+  if (loading) {
     return (
-      <div className="text-center mt-4 text-2xl text-red-500 font-serif">
-        Please login first.
-      </div>
-    );
-  } else if (user?.role !== "principle") {
-    return (
-      <div className="text-center mt-4 text-2xl text-red-500 font-serif">
-        This section is for the principal only.
-      </div>
-    );
-  } else if (user?.isApprove === false) {
-    return (
-      <div className="text-center mt-4 text-2xl text-red-500 font-serif">
-        Only approved principals can see this section.
+      <div className="flex justify-center mt-10">
+        <span className="loading loading-spinner loading-lg text-green-600"></span>
       </div>
     );
   }
 
-  const unapprovedFaculty = facultys.filter((faculty) => !faculty.isApprove);
-  const approvedfaculty = facultys.filter(
-    (faculty) => faculty.isApprove == true
-  );
+  if (error) {
+    return <p className="text-center text-red-500 mt-6">Error: {error}</p>;
+  }
+
+  if (!user) {
+    return (
+      <p className="text-center mt-6 text-xl text-red-500 font-serif">
+        Please login first.
+      </p>
+    );
+  }
+
+  if (user?.role !== "principle") {
+    return (
+      <p className="text-center mt-6 text-xl text-red-500 font-serif">
+        This section is for the principal only.
+      </p>
+    );
+  }
+
+  if (user?.isApprove === false) {
+    return (
+      <p className="text-center mt-6 text-xl text-red-500 font-serif">
+        Only approved principals can see this section.
+      </p>
+    );
+  }
+
+  const unapprovedFaculty = facultys.filter((f) => !f.isApprove);
+  const approvedFaculty = facultys.filter((f) => f.isApprove === true);
 
   return (
-    <div>
-      <div className="m-10">
-        <div>
-          {unapprovedFaculty.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200">
-                <thead>
-                  <tr className="text-left">
-                    <th className="py-2 px-4 border-b">Name</th>
-                    <th className="py-2 px-4 border-b">Email</th>
-                    <th className="py-2 px-4 border-b">Uploaded At</th>
-                    <th className="py-2 px-4 border-b">Role</th>
-                    <th className="py-2 px-4 border-b">Actions</th>
-                    <th className="py-2 px-4 border-b"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {unapprovedFaculty.map((teacher) => (
-                    <tr key={teacher._id} className="hover:bg-gray-100">
-                      <td className="py-2 px-4 border-b bg-gray-50">
-                        {teacher.name}
-                      </td>
-                      <td className="py-2 px-4 border-b bg-gray-100">
-                        {teacher.email}
-                      </td>
-                      <td className="py-2 px-4 border-b bg-gray-200">
-                        {new Date(teacher.uploatedTime).toLocaleDateString()}
-                      </td>
-                      <td className="py-2 px-4 border-b">{teacher.role}</td>
-                      <td className="py-2 px-4 border-b">
-                        <button
-                          onClick={() => handleApprove(teacher._id)}
-                          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
-                        >
-                          Approve
-                        </button>
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <button
-                          onClick={() => handleDelete(teacher._id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+    <div className="p-6 md:p-10 space-y-16">
+      {/* 🔴 Pending Faculty */}
+      {unapprovedFaculty.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <h2 className="text-2xl font-bold text-red-600 mb-6">
+            Pending Faculty Approvals
+          </h2>
 
-        <div className="mt-20">
-          {approvedfaculty.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200">
-                <thead>
-                  <tr className="text-left">
-                    <th className="py-2 px-4 border-b">Name</th>
-                    <th className="py-2 px-4 border-b">Email</th>
-                    <th className="py-2 px-4 border-b">Uploaded At</th>
-                    <th className="py-2 px-4 border-b">Role</th>
-                    <th className="py-2 px-4 border-b">Actions</th>
-                    <th className="py-2 px-4 border-b"></th>
+          <div className="overflow-x-auto">
+            <table className="table w-full">
+              <thead className="bg-red-500 text-white">
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Uploaded At</th>
+                  <th>Role</th>
+                  <th>Approve</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {unapprovedFaculty.map((faculty) => (
+                  <tr key={faculty._id} className="hover:bg-red-50">
+                    <td className="font-medium">{faculty.name}</td>
+                    <td>{faculty.email}</td>
+                    <td>
+                      {new Date(
+                        faculty.uploatedTime
+                      ).toLocaleDateString()}
+                    </td>
+                    <td className="capitalize">{faculty.role}</td>
+                    <td>
+                      <button
+                        onClick={() => handleApprove(faculty._id)}
+                        className="btn btn-sm bg-green-600 text-white hover:bg-green-700"
+                      >
+                        Approve
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleDelete(faculty._id)}
+                        className="btn btn-sm bg-red-500 text-white hover:bg-red-600"
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {approvedfaculty.map((teacher) => (
-                    <tr key={teacher._id} className="hover:bg-gray-100">
-                      <td className="py-2 px-4 border-b bg-gray-50">
-                        {teacher.name}
-                      </td>
-                      <td className="py-2 px-4 border-b bg-gray-100">
-                        {teacher.email}
-                      </td>
-                      <td className="py-2 px-4 border-b bg-gray-200">
-                        {new Date(teacher.uploatedTime).toLocaleDateString()}
-                      </td>
-                      <td className="py-2 px-4 border-b">{teacher.role}</td>
-                      <td className="py-2 px-4 border-b">
-                        <button
-                          onClick={() => handleUnApprove(teacher._id)}
-                          className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
-                        >
-                          UnApprove
-                        </button>
-                      </td>
-                      <td className="py-2 px-4 border-b"></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* 🟢 Approved Faculty */}
+      {approvedFaculty.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <h2 className="text-2xl font-bold text-green-700 mb-6">
+            Approved Faculty
+          </h2>
+
+          <div className="overflow-x-auto">
+            <table className="table w-full">
+              <thead className="bg-green-600 text-white">
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Uploaded At</th>
+                  <th>Role</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {approvedFaculty.map((faculty) => (
+                  <tr key={faculty._id} className="hover:bg-green-50">
+                    <td className="font-medium">{faculty.name}</td>
+                    <td>{faculty.email}</td>
+                    <td>
+                      {new Date(
+                        faculty.uploatedTime
+                      ).toLocaleDateString()}
+                    </td>
+                    <td className="capitalize">{faculty.role}</td>
+                    <td>
+                      <button
+                        onClick={() => handleUnApprove(faculty._id)}
+                        className="btn btn-sm bg-yellow-500 text-white hover:bg-yellow-600"
+                      >
+                        Unapprove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
