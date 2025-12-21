@@ -137,7 +137,7 @@ const Notice = () => {
             <label className="block text-lg font-semibold mb-2">Heading</label>
             <input
               type="text"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-green-500"
+              className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring focus:ring-green-500"
               {...register("heading", { required: true })}
             />
             {errors.heading && (
@@ -149,7 +149,7 @@ const Notice = () => {
               Paragraph
             </label>
             <textarea
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-green-500"
+              className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring focus:ring-green-500"
               rows="5"
               {...register("paragraph")}
             ></textarea>

@@ -117,7 +117,7 @@ const addStudent = () => {
         >
           <div>
             <input
-              className="input input-bordered border-green-500 mb-5 w-full"
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full"
               {...register("name", {
                 required: "Name is required",
                 pattern: {
@@ -134,7 +134,7 @@ const addStudent = () => {
           </div>
           <div>
             <select
-              className="input input-bordered border-green-500 mb-5 w-full"
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full"
               required
               {...register("class")}
             >
@@ -151,7 +151,7 @@ const addStudent = () => {
           </div>
           <div>
             <input
-              className="input input-bordered border-green-500 mb-5 w-full"
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full"
               placeholder="Enter studnet class role"
               required
               name="class_role"
@@ -170,7 +170,7 @@ const addStudent = () => {
           </div>
           <div>
             <input
-              className="input input-bordered border-green-500 mb-5 w-full"
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full"
               {...register("number", {
                 pattern: {
                   value: /^01\d{9}$/,
@@ -187,7 +187,7 @@ const addStudent = () => {
           </div>
           <div>
             <input
-              className="input input-bordered border-green-500 mb-5 w-full"
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full"
               {...register("fathers_name", {
                 required: "Father's name is required",
                 pattern: {
@@ -204,7 +204,7 @@ const addStudent = () => {
           </div>
           <div>
             <input
-              className="input input-bordered border-green-500 mb-5 w-full"
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full"
               {...register("fathers_number", {
                 required: "Father's number is required",
                 pattern: {
@@ -222,7 +222,7 @@ const addStudent = () => {
           </div>
           <div>
             <input
-              className="input input-bordered border-green-500 mb-5 w-full"
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full"
               {...register("mothers_name", {
                 required: "Mother's name is required",
                 pattern: {
@@ -239,7 +239,7 @@ const addStudent = () => {
           </div>
           <div>
             <input
-              className="input input-bordered border-green-500 mb-5 w-full"
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full"
               {...register("mothers_number", {
                 pattern: {
                   value: /^01\d{9}$/,
@@ -256,7 +256,7 @@ const addStudent = () => {
           </div>
           <div className="relative w-full">
               <input
-                className="input input-bordered border-green-500 mb-5 w-full pr-10" // Added padding to the right for the icon
+                className="input input-bordered bg-white text-black border-green-500 mb-5 w-full pr-10" // Added padding to the right for the icon
                 {...register("password")}
                 required
                 placeholder="Enter A default Password"
@@ -273,7 +273,7 @@ const addStudent = () => {
           <div>
             <input
               type="email"
-              className="input input-bordered border-green-500 mb-5 w-full"
+              className="input input-bordered bg-white text-black border-green-500 mb-5 w-full"
               {...register("email", {
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,

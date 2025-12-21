@@ -126,7 +126,7 @@ const AddMoney = () => {
             type="number"
             id="amount"
             {...register("amount", { required: true, valueAsNumber: true })}
-            className="border border-gray-300 p-2 w-full"
+            className="border bg-white text-black border-gray-300 p-2 w-full"
           />
           {errors.amount && (
             <span className="text-red-500">
