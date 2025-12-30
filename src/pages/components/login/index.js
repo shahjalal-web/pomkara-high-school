@@ -84,7 +84,7 @@ const Login = () => {
                 type="email"
                 placeholder="Email address"
                 {...register("email", { required: true })}
-                className="input input-bordered w-full border-green-500"
+                className="input input-bordered bg-white text-black w-full border-green-500"
               />
             </div>
 
@@ -94,7 +94,7 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 {...register("password", { required: true })}
-                className="input input-bordered w-full border-green-500 pr-12"
+                className="input input-bordered bg-white text-black w-full border-green-500 pr-12"
               />
               <button
                 type="button"
