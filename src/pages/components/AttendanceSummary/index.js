@@ -70,6 +70,8 @@ const AttendanceSummary = ({ attendance = [] }) => {
         )}
 
         {filter === "month" && (
+          <>
+            <label className="md:hidden block">Select Date</label>
             <input
               type="month"
               className="input input-bordered text-blue-600 bg-blue-200"
@@ -77,10 +79,12 @@ const AttendanceSummary = ({ attendance = [] }) => {
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
+          </>
         )}
 
         {filter === "range" && (
           <>
+            <label className="md:hidden block">Select Started Date</label>
             <input
               type="date"
               className="input input-bordered text-blue-600 bg-blue-200"
@@ -88,6 +92,8 @@ const AttendanceSummary = ({ attendance = [] }) => {
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
+
+            <label className="md:hidden block">Select Ending Date</label>
             <input
               type="date"
               className="input input-bordered text-blue-600 bg-blue-200"
