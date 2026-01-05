@@ -19,10 +19,7 @@ const AttendanceSummary = ({ attendance = [] }) => {
 
       if (filter === "month") {
         const [y, m] = startDate.split("-");
-        return (
-          d.getFullYear() === Number(y) &&
-          d.getMonth() + 1 === Number(m)
-        );
+        return d.getFullYear() === Number(y) && d.getMonth() + 1 === Number(m);
       }
 
       if (filter === "range") {
@@ -76,6 +73,7 @@ const AttendanceSummary = ({ attendance = [] }) => {
           <input
             type="month"
             className="input input-bordered bg-blue-400 text-black"
+            placeholder="Enter Month"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
@@ -86,12 +84,14 @@ const AttendanceSummary = ({ attendance = [] }) => {
             <input
               type="date"
               className="input input-bordered bg-blue-400 text-black"
+              placeholder="Enter Started Month"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
             <input
               type="date"
               className="input input-bordered bg-blue-400 text-black"
+              placeholder="Enter Ending Month"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
@@ -139,13 +139,9 @@ const AttendanceSummary = ({ attendance = [] }) => {
                   <td>{new Date(a.date).toLocaleDateString()}</td>
                   <td>
                     {a.isPresent ? (
-                      <span className="text-green-600 font-bold">
-                        Present
-                      </span>
+                      <span className="text-green-600 font-bold">Present</span>
                     ) : (
-                      <span className="text-red-500 font-bold">
-                        Absent
-                      </span>
+                      <span className="text-red-500 font-bold">Absent</span>
                     )}
                   </td>
                 </tr>
