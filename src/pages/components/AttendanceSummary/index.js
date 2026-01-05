@@ -76,8 +76,7 @@ const AttendanceSummary = ({ attendance = [] }) => {
           <input
             type="month"
             className="input input-bordered bg-white text-black"
-
-placeholder="Enter Month"
+placeholder="Enter month"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
@@ -88,14 +87,14 @@ placeholder="Enter Month"
             <input
               type="date"
               className="input input-bordered bg-white text-black"
-placeholder="Enter Started Month"
+placeholder="Enter started month"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
             <input
               type="date"
               className="input input-bordered bg-white text-black"
-placeholder="Enter Ending Month"
+placeholder="Enter end month"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
