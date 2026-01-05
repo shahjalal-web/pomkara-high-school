@@ -70,28 +70,28 @@ const AttendanceSummary = ({ attendance = [] }) => {
         )}
 
         {filter === "month" && (
-          <input
-            type="month"
-            className="input input-bordered bg-blue-400 text-black"
-            placeholder="Enter Month"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+            <input
+              type="month"
+              className="input input-bordered text-blue-600 bg-blue-200"
+              placeholder="Enter Month"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
         )}
 
         {filter === "range" && (
           <>
             <input
               type="date"
-              className="input input-bordered bg-white text-black"
+              className="input input-bordered text-blue-600 bg-blue-200"
               placeholder="Enter Started Month"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
             <input
               type="date"
-              className="input input-bordered bg-white text-black"
-placeholder="Enter end month"
+              className="input input-bordered text-blue-600 bg-blue-200"
+              placeholder="Enter end month"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
