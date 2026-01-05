@@ -75,7 +75,8 @@ const AttendanceSummary = ({ attendance = [] }) => {
         {filter === "month" && (
           <input
             type="month"
-            className="input input-bordered bg-blue-300 text-white"
+            className="input input-bordered bg-white text-black"
+placeholder="Enter Month"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
@@ -85,13 +86,15 @@ const AttendanceSummary = ({ attendance = [] }) => {
           <>
             <input
               type="date"
-              className="input input-bordered bg-blue-400 text-black"
+              className="input input-bordered bg-white text-black"
+placeholder="Enter Started Month"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
             <input
               type="date"
-              className="input input-bordered bg-blue-400 text-black"
+              className="input input-bordered bg-white text-black"
+placeholder="Enter Ending Month"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
