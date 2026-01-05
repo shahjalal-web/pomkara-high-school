@@ -73,7 +73,7 @@ const Result = () => {
       <div>
         <div>
         <div className="">
-          {result?.map((results) => (
+          {[...result]?.reverse().map((results) => (
             <>
               <div className="max-w-[800px] mx-auto shadow-xl bg-white text-center mt-5">
                 <h2 className="md:text-4xl text-xl font-bold font-serif text-green-400 py-3">

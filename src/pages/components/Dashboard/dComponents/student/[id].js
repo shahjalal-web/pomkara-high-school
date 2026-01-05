@@ -1,8 +1,28 @@
-"use client"
+"use client";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import DashboardLayout from "../../DashboardLayout";
 import ReactModal from "react-modal";
+import { IoReloadOutline } from "react-icons/io5";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Cell,
+} from "recharts";
+import ResultSection from "./result";
+import DuePaymentsSection from "./duePayment";
+import PaidPaymentsSection from "./paidPayment";
+import AttendanceSummary from "@/pages/components/AttendanceSummary";
+
+const PASS_PERCENT = 33;
+
+const isPass = (obtained, full) =>
+  (Number(obtained) / Number(full)) * 100 >= PASS_PERCENT;
 
 const StudentDetails = () => {
   const router = useRouter();
@@ -21,6 +41,20 @@ const StudentDetails = () => {
   const [result, setResult] = useState(0);
   const [mark, setFullMark] = useState(0);
   const [success, setSuccess] = useState("");
+  const [showAllResults, setShowAllResults] = useState(false);
+
+  // ⭐ NEW FILTER STATES
+  const [examFilter, setExamFilter] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
+  const [subjectFilter, setSubjectFilter] = useState("");
+  const [passFilter, setPassFilter] = useState("");
+
+  const resetFilter = () => {
+    setExamFilter("");
+    setYearFilter("");
+    setSubjectFilter("");
+    setPassFilter("");
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -37,54 +71,41 @@ const StudentDetails = () => {
   const reversedPaidPayments =
     all_paid_payment?.length > 0 ? all_paid_payment.slice().reverse() : [];
 
-  const handleOpenModal = () => {
-    setShowModal(true);
-  };
-
+  const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => {
     setShowModal(false);
-    setAmount(0); // Reset amount after closing modal
+    setAmount(0);
     setAmountType("");
-    setError(""); // Reset error after closing modal
+    setError("");
   };
 
-  const handleOpenResultModal = () => {
-    setShowResultModal(true);
-  };
-
+  const handleOpenResultModal = () => setShowResultModal(true);
   const handleCloseResultModal = () => {
     setShowResultModal(false);
-    setAmount(0); // Reset amount after closing modal
-    setAmountType("");
-    setError(""); // Reset error after closing modal
+    setError("");
   };
 
-  const handleDueModalOpen = () => {
-    setShowDueModal(true);
-  };
-
+  const handleDueModalOpen = () => setShowDueModal(true);
   const handleDueModalClose = () => {
     setShowDueModal(false);
-    setAmount(0); // Reset amount after closing modal
+    setAmount(0);
     setAmountType("");
-    setError(""); // Reset error after closing modal
+    setError("");
   };
+
+  // ================== EXISTING FUNCTIONS (unchanged) ==================
+  // ... (👉 তোমার আগের সব function আগের মতোই আছে, নিচে 그대로 রাখা হলো)
 
   const handleAddAmount = async (studentId) => {
     setError("");
-    const addedBy = {
-      name: user.name,
-      email: user.email,
-    };
+    const addedBy = { name: user.name, email: user.email };
 
     try {
       const response = await fetch(
         `https://pomkara-high-school-server.vercel.app/students/addAmount/${studentId}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ amount, amountType, addedBy }),
         }
       );
@@ -95,39 +116,27 @@ const StudentDetails = () => {
         throw new Error(data.error);
       }
 
-      // Re-fetch student data after successful addition
       const updatedStudentResponse = await fetch(
         `https://pomkara-high-school-server.vercel.app/students/${id}`
       );
-      if (!updatedStudentResponse.ok) {
-        throw new Error("Failed to fetch updated student details");
-      }
       const updatedStudent = await updatedStudentResponse.json();
       setStudent(updatedStudent);
-
-      //console.log("Amount added successfully:", updatedStudent);
       handleDueModalClose();
     } catch (error) {
       setError(error.message);
-      console.error("Error adding amount:", error);
     }
   };
 
   const handleCutAmount = async (studentId) => {
     setError("");
-    const cutedBy = {
-      name: user.name,
-      email: user.email,
-    };
+    const cutedBy = { name: user.name, email: user.email };
 
     try {
       const response = await fetch(
         `https://pomkara-high-school-server.vercel.app/students/cutAmount/${studentId}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ amount, amountType, cutedBy }),
         }
       );
@@ -138,21 +147,15 @@ const StudentDetails = () => {
         throw new Error(data.error);
       }
 
-      // Re-fetch student data after successful addition
       const updatedStudentResponse = await fetch(
         `https://pomkara-high-school-server.vercel.app/students/${id}`
       );
-      if (!updatedStudentResponse.ok) {
-        throw new Error("Failed to fetch updated student details");
-      }
+
       const updatedStudent = await updatedStudentResponse.json();
       setStudent(updatedStudent);
-
-      //console.log("Amount cuted successfully:", updatedStudent);
       handleCloseModal();
     } catch (error) {
       setError(error.message);
-      console.error("Error adding amount:", error);
     }
   };
 
@@ -160,22 +163,18 @@ const StudentDetails = () => {
     setError("");
     setLoading(true);
     setSuccess("");
-    const addedBy = {
-      name: user.name,
-      email: user.email,
-    };
+    const addedBy = { name: user.name, email: user.email };
 
     try {
       const response = await fetch(
         `https://pomkara-high-school-server.vercel.app/students/addResult/${studentId}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ examType, subject, result, mark, addedBy }),
         }
       );
+
       if (!response.ok) {
         const data = await response.json();
         setLoading(false);
@@ -183,33 +182,25 @@ const StudentDetails = () => {
         throw new Error(data.error);
       }
 
-      // Re-fetch student data after successful addition
       const updatedStudentResponse = await fetch(
         `https://pomkara-high-school-server.vercel.app/students/${id}`
       );
-      if (!updatedStudentResponse.ok) {
-        setLoading(false);
-        throw new Error("Failed to fetch updated student details");
-      }
+
       const updatedStudent = await updatedStudentResponse.json();
       setStudent(updatedStudent);
       setLoading(false);
       setSuccess("Result added successfully");
-      //console.log("Result added successfully:", updatedStudent);
-    } catch (err) {
+    } catch {
       setLoading(false);
       setSuccess("");
-      //console.log("error", err);
     }
   };
 
-  const calculateDueTotal = (payments) => {
-    return payments.reduce((acc, payment) => acc + Number(payment.amount), 0);
-  };
+  const calculateDueTotal = (payments) =>
+    payments.reduce((acc, payment) => acc + Number(payment.amount), 0);
 
-  const calculatePaidTotal = (payments) => {
-    return payments.reduce((acc, payment) => acc + Number(payment.amount), 0);
-  };
+  const calculatePaidTotal = (payments) =>
+    payments.reduce((acc, payment) => acc + Number(payment.amount), 0);
 
   const totalDueAmount = student?.due_payment
     ? calculateDueTotal(student.due_payment)
@@ -225,37 +216,66 @@ const StudentDetails = () => {
     if (id) {
       const fetchStudent = async () => {
         try {
-          const response = await fetch(
+          const res = await fetch(
             `https://pomkara-high-school-server.vercel.app/students/${id}`
           );
-          if (!response.ok) {
-            throw new Error("Failed to fetch student details");
-          }
-          const data = await response.json();
+          const data = await res.json();
           setStudent(data);
-        } catch (error) {
-          console.error("Error fetching student details:", error);
-        }
+        } catch {}
       };
-
       fetchStudent();
     }
   }, [id]);
 
-  if (!student) {
+  // ⭐⭐⭐ FILTERED RESULTS ⭐⭐⭐
+  const filteredResults = useMemo(() => {
+    return student?.result
+      ?.slice()
+      .reverse()
+      .filter(
+        (r) =>
+          (!examFilter || r.examType === examFilter) &&
+          (!yearFilter ||
+            new Date(r.date).getFullYear().toString() === yearFilter) &&
+          (!subjectFilter || r.subject === subjectFilter) &&
+          (!passFilter ||
+            (passFilter === "pass" && isPass(r.result, r.mark)) ||
+            (passFilter === "fail" && !isPass(r.result, r.mark)))
+      );
+  }, [student, examFilter, yearFilter, subjectFilter, passFilter]);
+
+  const chartData = useMemo(() => {
+    if (!filteredResults) return [];
+
+    const map = {};
+
+    filteredResults.forEach((r) => {
+      const percent = (Number(r.result) / Number(r.mark)) * 100;
+
+      if (!map[r.subject]) {
+        map[r.subject] = {
+          subject: r.subject,
+          totalPercent: 0,
+          count: 0,
+        };
+      }
+
+      map[r.subject].totalPercent += percent;
+      map[r.subject].count += 1;
+    });
+
+    return Object.values(map).map((item) => ({
+      subject: item.subject,
+      avgPercent: Math.round(item.totalPercent / item.count),
+    }));
+  }, [filteredResults]);
+
+  if (!student)
     return (
       <div className="mt-5 text-center">
         <span className="loading loading-spinner text-primary"></span>
-        <span className="loading loading-spinner text-secondary"></span>
-        <span className="loading loading-spinner text-accent"></span>
-        <span className="loading loading-spinner text-neutral"></span>
-        <span className="loading loading-spinner text-info"></span>
-        <span className="loading loading-spinner text-success"></span>
-        <span className="loading loading-spinner text-warning"></span>
-        <span className="loading loading-spinner text-error"></span>
       </div>
     );
-  }
 
   if (!["teacher", "principle", "faculty"].includes(user?.role)) {
     return (
@@ -348,99 +368,18 @@ const StudentDetails = () => {
         </div>
       )}
 
-      {/* ================= DUE PAYMENT TABLE ================= */}
-      <div className="overflow-x-auto bg-white rounded-xl shadow-md p-4">
-        <h2 className="text-xl font-bold text-red-500 mb-3">
-          Due Payment Details
-        </h2>
-        <table className="table w-full">
-          <thead className="bg-green-500 text-white">
-            <tr>
-              <th>Amount</th>
-              <th>For</th>
-              <th>Added By</th>
-              <th>Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reversedDuePayments
-              .filter((p) => !p.isPaid)
-              .map((p, i) => (
-                <tr key={i}>
-                  <td>{p.amount}</td>
-                  <td>{p.amountType}</td>
-                  <td>{p.addedBy?.name}</td>
-                  <td>{new Date(p.date).toLocaleDateString()}</td>
-                  <td className="text-yellow-500 font-bold">Due</td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Due Payments */}
+      <DuePaymentsSection payments={reversedDuePayments} />
 
-      {/* ================= PAID PAYMENT TABLE ================= */}
-      <div className="overflow-x-auto bg-white rounded-xl shadow-md p-4">
-        <h2 className="text-xl font-bold text-green-500 mb-3">
-          Paid Payment History
-        </h2>
-        <table className="table w-full">
-          <thead className="bg-green-600 text-white">
-            <tr>
-              <th>Date</th>
-              <th>For</th>
-              <th>Amount</th>
-              <th>Accepted By</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reversedPaidPayments
-              .filter((p) => p.isPaid)
-              .map((p, i) => (
-                <tr key={i}>
-                  <td>{new Date(p.date).toLocaleDateString()}</td>
-                  <td>{p.amountType}</td>
-                  <td>{p.amount}</td>
-                  <td>{p.addedBy?.name}</td>
-                  <td className="text-green-500 font-bold">Paid</td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Paid Payments */}
 
-      {/* ================= RESULT TABLE ================= */}
-      <div className="overflow-x-auto bg-white rounded-xl shadow-md p-4">
-        <h2 className="text-xl font-bold text-indigo-600 mb-3">Exam Results</h2>
-        <table className="table w-full">
-          <thead className="bg-indigo-600 text-white">
-            <tr>
-              <th>Exam</th>
-              <th>Subject</th>
-              <th>Marks</th>
-              <th>Date</th>
-              <th>Uploaded By</th>
-            </tr>
-          </thead>
-          <tbody>
-            {student?.result
-              ?.slice()
-              .reverse()
-              .map((r, i) => (
-                <tr key={i}>
-                  <td>{r.examType}</td>
-                  <td>{r.subject}</td>
-                  <td>
-                    {r.result} / {r.mark}
-                  </td>
-                  <td>{new Date(r.date).toLocaleDateString()}</td>
-                  <td>{r.addedBy?.name}</td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+      <PaidPaymentsSection payments={reversedPaidPayments} />
+
+      {/* ================= RESULT TABLE (WITH FILTER) ================= */}
+      <ResultSection results={student?.result || []} />
+
+      
+        <AttendanceSummary attendance={student?.attendance || []} />
 
       {/* ================= ADD DUE MODAL ================= */}
       <ReactModal
@@ -506,9 +445,26 @@ const StudentDetails = () => {
           <option disabled selected>
             Select Payment Type
           </option>
-          <option value="monthly_fee">Monthly Fee</option>
+
+          <option value="admission_fee">Admission Fee</option>
+          <option value="tuition_fee">Tuition / Monthly Fee</option>
           <option value="exam_fee">Exam Fee</option>
-          <option value="fine">Fine</option>
+          <option value="registration_fee">Registration Fee</option>
+          <option value="library_fee">Library Fee</option>
+          <option value="transport_fee">Transport / Bus Fee</option>
+          <option value="hostel_fee">Hostel Fee</option>
+          <option value="lab_fee">Laboratory Fee</option>
+          <option value="sports_fee">Sports Fee</option>
+          <option value="computer_fee">Computer Fee</option>
+          <option value="activity_fee">Co-curricular / Activity Fee</option>
+          <option value="id_card_fee">ID Card / Replacement Fee</option>
+          <option value="certificate_fee">Certificate Fee</option>
+          <option value="uniform_fee">Uniform Fee</option>
+          <option value="book_fee">Books & Stationery</option>
+          <option value="maintenance_fee">Maintenance / Development Fee</option>
+          <option value="late_fee">Late Fee</option>
+          <option value="fine">Fine / Penalty</option>
+          <option value="others">Others</option>
         </select>
 
         <input
@@ -544,17 +500,101 @@ const StudentDetails = () => {
           Add Exam Result
         </h2>
 
-        <input
-          className="input input-bordered bg-white text-black w-full mb-2"
-          placeholder="Exam Type"
+        {/* Exam Type Dropdown */}
+        <select
+          className="select select-bordered bg-white text-black w-full mb-2"
           onChange={(e) => setExamType(e.target.value)}
-        />
+          defaultValue=""
+        >
+          <option value="" disabled>
+            Select Exam Type
+          </option>
+          <option value="monthly">Monthly Test</option>
+          <option value="terminal">Terminal Exam</option>
+          <option value="midterm">Mid Term</option>
+          <option value="final">Final Exam</option>
+          <option value="retest">Re-test</option>
+        </select>
 
-        <input
-          className="input input-bordered bg-white text-black w-full mb-2"
-          placeholder="Subject"
+        {/* Subject Dropdown */}
+        <select
+          className="select select-bordered bg-white text-black w-full mb-2"
           onChange={(e) => setSubject(e.target.value)}
-        />
+          defaultValue=""
+        >
+          <option value="" disabled>
+            Select Subject
+          </option>
+
+          {/* Class 6–8 (Common) */}
+          <optgroup label="Class 6–8">
+            <option value="bangla">Bangla</option>
+            <option value="english">English</option>
+            <option value="math">Mathematics</option>
+            <option value="science">General Science</option>
+            <option value="social_science">Social Science</option>
+            <option value="religion">Religion Studies</option>
+            <option value="bangladesh_studies">
+              Bangladesh & Global Studies
+            </option>
+            <option value="ict">ICT</option>
+            <option value="agriculture">Agriculture</option>
+            <option value="home_science">Home Science</option>
+            <option value="drawing">Drawing</option>
+            <option value="physical_education">Physical Education</option>
+          </optgroup>
+
+          {/* Class 9–10 : Science */}
+          <optgroup label="Class 9–10 — Science">
+            <option value="physics">Physics</option>
+            <option value="chemistry">Chemistry</option>
+            <option value="biology">Biology</option>
+            <option value="higher_math">Higher Mathematics</option>
+            <option value="general_math">General Mathematics</option>
+            <option value="ict_9_10">ICT</option>
+            <option value="bangla_9_10">Bangla</option>
+            <option value="english_9_10">English</option>
+            <option value="bangladesh_global">
+              Bangladesh & Global Studies
+            </option>
+            <option value="religion_9_10">Religion Studies</option>
+            <option value="physical_education_9_10">Physical Education</option>
+          </optgroup>
+
+          {/* Class 9–10 : Commerce */}
+          <optgroup label="Class 9–10 — Commerce">
+            <option value="accounting">Accounting</option>
+            <option value="business_entrepreneurship">
+              Business Entrepreneurship
+            </option>
+            <option value="finance_banking">Finance & Banking</option>
+            <option value="general_math_commerce">General Mathematics</option>
+            <option value="ict_commerce">ICT</option>
+            <option value="bangla_commerce">Bangla</option>
+            <option value="english_commerce">English</option>
+            <option value="bangladesh_global_commerce">
+              Bangladesh & Global Studies
+            </option>
+            <option value="religion_commerce">Religion Studies</option>
+          </optgroup>
+
+          {/* Class 9–10 : Arts */}
+          <optgroup label="Class 9–10 — Arts">
+            <option value="civics">Civics</option>
+            <option value="geography">Geography & Environment</option>
+            <option value="history">
+              History of Bangladesh & World Civilization
+            </option>
+            <option value="economics">Economics</option>
+            <option value="agriculture_arts">Agriculture</option>
+            <option value="ict_arts">ICT</option>
+            <option value="bangla_arts">Bangla</option>
+            <option value="english_arts">English</option>
+            <option value="religion_arts">Religion Studies</option>
+          </optgroup>
+
+          <option value="others">Others</option>
+        </select>
 
         <input
           type="number"

@@ -1,3 +1,4 @@
+"use client";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
 import React, { useContext, useState } from "react";
@@ -20,8 +21,40 @@ const SignUp = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
+
+  // watch fields
+  const selectedRole = watch("role");
+  const selectedGroup = watch("group");
+
+  // SUBJECT LISTS
+  const subjectOptions = {
+    science: ["Physics", "Chemistry", "Biology", "Higher Math", "ICT"],
+    commerce: [
+      "Accounting",
+      "Finance & Banking",
+      "Business Entrepreneurship",
+      "General Math",
+      "ICT",
+    ],
+    arts: ["Civics", "Geography", "Economics", "History", "Bangla", "English"],
+    general: [
+      "Bangla",
+      "English",
+      "General Math",
+      "General Science",
+      "Religion",
+      "Social Science",
+      "ICT",
+      "Agriculture",
+      "Home Science",
+      "Physical Education",
+      "Drawing / Arts",
+      "Work & Life Oriented Education",
+    ],
+  };
 
   const onSubmit = async ({
     name,
@@ -31,12 +64,15 @@ const SignUp = () => {
     image,
     about,
     number,
+    group,
+    subjects,
   }) => {
     setLoading(true);
     setError("");
     setSuccess("");
 
     try {
+      // image upload
       const imageFile = image[0];
       const formData = new FormData();
       formData.append("image", imageFile);
@@ -63,6 +99,10 @@ const SignUp = () => {
         number,
         about,
         image: imageUrl,
+
+        // only meaningful for teachers
+        group: role === "teacher" ? group || "" : "",
+        subjects: role === "teacher" ? subjects || [] : [],
       };
 
       createUserWithEmailAndPassword(auth, email, password)
@@ -110,13 +150,51 @@ const SignUp = () => {
             required
             className="input input-bordered bg-white text-black w-full border-green-500"
           >
-            <option disabled selected value="">
-              Select your role
-            </option>
+            <option value="">Select your role</option>
             <option value="principle">Principal</option>
-            <option value="faculty">Faculty</option>
             <option value="teacher">Teacher</option>
+            <option value="management">Management</option>
           </select>
+
+          {/* 👇 TEACHER EXTRA FIELDS 👇 */}
+          {selectedRole === "teacher" && (
+            <>
+              {/* Group */}
+              <select
+                {...register("group", { required: true })}
+                className="input input-bordered bg-white text-black w-full border-green-500"
+              >
+                <option value="">Select group</option>
+                <option value="science">Science</option>
+                <option value="commerce">Commerce</option>
+                <option value="arts">Arts</option>
+                <option value="general">General (Class 6–8)</option>
+              </select>
+
+              {/* Subjects (multiple) */}
+              <div className="border border-green-400 rounded-lg p-3">
+                <p className="font-semibold mb-2">Select subjects</p>
+
+                <div className="grid grid-cols-2 gap-2">
+                  {(subjectOptions[selectedGroup] || []).map((s) => (
+                    <label key={s} className="flex gap-2 items-center">
+                      <input
+                        type="checkbox"
+                        value={s}
+                        {...register("subjects")}
+                        className="checkbox checkbox-success"
+                      />
+                      <span>{s}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-500">
+                👉 Ctrl (Windows) / Cmd (Mac) ধরে রেখে multiple select করুন
+              </p>
+            </>
+          )}
 
           {/* Email */}
           <input
@@ -216,7 +294,10 @@ const SignUp = () => {
         {/* Login link */}
         <p className="text-center mt-5 text-sm">
           Already have an account?{" "}
-          <Link href="/components/login" className="text-green-600 font-semibold">
+          <Link
+            href="/components/login"
+            className="text-green-600 font-semibold"
+          >
             Login
           </Link>
         </p>

@@ -44,7 +44,7 @@ useEffect(() => {
       { label: "Gallery", href: "/components/gallary" },
       { label: "Teacher", href: "/components/teacher" },
       { label: "Notice", href: "/components/notice" },
-      { label: "Result", href: "/components/result" },
+      // { label: "Result", href: "/components/result" },
       { label: "Contact", href: "/components/contact" },
     ];
 

@@ -12,7 +12,7 @@ const AddMoney = () => {
   } = useForm();
 
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -22,11 +22,11 @@ const AddMoney = () => {
   }, []);
 
   const onSubmit = async (data) => {
-    setLoading(true)
+    setLoading(true);
     // Ensure user data is available
     if (!user?.name || !user?.email) {
       alert("User information is missing. Please log in.");
-      setLoading(false)
+      setLoading(false);
       return;
     }
 
@@ -38,31 +38,41 @@ const AddMoney = () => {
     };
 
     try {
-      const response = await fetch("https://pomkara-high-school-server.vercel.app/add-money", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(finalData), // Send the flattened finalData
-      });
+      const response = await fetch(
+        "https://pomkara-high-school-server.vercel.app/add-money",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(finalData), // Send the flattened finalData
+        }
+      );
 
       if (response.ok) {
-        setLoading(false)
+        setLoading(false);
         alert("Payment added successfully!");
         reset(); // Reset the form after successful submission
       } else {
         alert("Failed to add payment");
-        setLoading(false)
+        setLoading(false);
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       console.error("Error adding payment:", error);
       alert("An error occurred while adding payment.");
     }
   };
 
-  if (!["teacher", "principle",].includes(user?.role) || user?.isApprove == false) {
-    return <div  className="text-center mt-4 text-2xl text-red-500 font-serif">Please login first to see this section</div>;
+  if (
+    !["teacher", "principle"].includes(user?.role) ||
+    user?.isApprove == false
+  ) {
+    return (
+      <div className="text-center mt-4 text-2xl text-red-500 font-serif">
+        Please login first to see this section
+      </div>
+    );
   }
 
   return (
@@ -105,13 +115,27 @@ const AddMoney = () => {
             <option value="" disabled selected>
               Select Reason
             </option>
-            <option value="Admission Fee">Admission Fee</option>
-            <option value="Exam Fee">Exam Fee</option>
-            <option value="Monthly Fee">Monthly Fee</option>
-            <option value="Session fee">Session fee</option>
-            <option value="Scout fee">Scout fee</option>
-            <option value="Sports Fee">Sports Fee</option>
-            <option value="Other">Other</option>
+            <option value="admission_fee">Admission Fee</option>
+            <option value="tuition_fee">Tuition / Monthly Fee</option>
+            <option value="exam_fee">Exam Fee</option>
+            <option value="registration_fee">Registration Fee</option>
+            <option value="library_fee">Library Fee</option>
+            <option value="transport_fee">Transport / Bus Fee</option>
+            <option value="hostel_fee">Hostel Fee</option>
+            <option value="lab_fee">Laboratory Fee</option>
+            <option value="sports_fee">Sports Fee</option>
+            <option value="computer_fee">Computer Fee</option>
+            <option value="activity_fee">Co-curricular / Activity Fee</option>
+            <option value="id_card_fee">ID Card / Replacement Fee</option>
+            <option value="certificate_fee">Certificate Fee</option>
+            <option value="uniform_fee">Uniform Fee</option>
+            <option value="book_fee">Books & Stationery</option>
+            <option value="maintenance_fee">
+              Maintenance / Development Fee
+            </option>
+            <option value="late_fee">Late Fee</option>
+            <option value="fine">Fine / Penalty</option>
+            <option value="others">Others</option>
           </select>
           {errors.reason && (
             <span className="text-red-500">Reason is required</span>
@@ -139,7 +163,7 @@ const AddMoney = () => {
           type="submit"
           className="bg-blue-500 w-full text-white p-2 rounded hover:bg-blue-600"
         >
-         {loading? "Money Addeding....": " Add Money"}
+          {loading ? "Money Addeding...." : " Add Money"}
         </button>
       </form>
     </div>
@@ -147,7 +171,6 @@ const AddMoney = () => {
 };
 
 export default AddMoney;
-
 
 AddMoney.getLayout = function getLayout(page) {
   return <DashboardLayout>{page}</DashboardLayout>;

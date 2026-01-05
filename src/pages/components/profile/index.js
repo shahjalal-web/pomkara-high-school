@@ -4,6 +4,10 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import ResultSection from "../Dashboard/dComponents/student/result";
+import DuePaymentsSection from "../Dashboard/dComponents/student/duePayment";
+import PaidPaymentsSection from "../Dashboard/dComponents/student/paidPayment";
+import AttendanceSummary from "../AttendanceSummary";
 
 const Profile = () => {
   const [student, setStudent] = useState(null);
@@ -143,101 +147,18 @@ const Profile = () => {
         </table>
       </div>
 
-      {/* Results */}
       <div className="max-w-6xl mx-auto space-y-10">
         {/* Results Table */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
-          <h3 className="text-center text-xl font-bold text-red-500 p-4">
-            All Results
-          </h3>
-          <table className="table w-full">
-            <thead className="bg-green-500 text-white">
-              <tr>
-                <th>Exam</th>
-                <th>Subject</th>
-                <th>Result</th>
-                <th>Date</th>
-                <th>Added By</th>
-              </tr>
-            </thead>
-            <tbody>
-              {student.result
-                ?.slice()
-                .reverse()
-                .map((r, i) => (
-                  <tr key={i}>
-                    <td>{r.examType}</td>
-                    <td>{r.subject}</td>
-                    <td>{r.result} / {r.mark}</td>
-                    <td>{new Date(r.date).toLocaleDateString()}</td>
-                    <td>{r.addedBy?.name}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+        <ResultSection results={student?.result || []} />
 
         {/* Due Payments */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
-          <h3 className="text-center text-xl font-bold text-yellow-500 p-4">
-            Due Payments
-          </h3>
-          <table className="table w-full">
-            <thead className="bg-yellow-400 text-white">
-              <tr>
-                <th>Amount</th>
-                <th>For</th>
-                <th>Added By</th>
-                <th>Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reversedDuePayments
-                .filter((p) => !p.isPaid)
-                .map((p, i) => (
-                  <tr key={i}>
-                    <td>{p.amount}</td>
-                    <td>{p.amountType}</td>
-                    <td>{p.addedBy?.name}</td>
-                    <td>{new Date(p.date).toLocaleDateString()}</td>
-                    <td className="text-yellow-500 font-bold">Due</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+        <DuePaymentsSection payments={reversedDuePayments} />
 
         {/* Paid Payments */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
-          <h3 className="text-center text-xl font-bold text-green-500 p-4">
-            Paid Payments
-          </h3>
-          <table className="table w-full">
-            <thead className="bg-green-500 text-white">
-              <tr>
-                <th>Date</th>
-                <th>For</th>
-                <th>Amount</th>
-                <th>Accepted By</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reversedPaidPayments
-                .filter((p) => p.isPaid)
-                .map((p, i) => (
-                  <tr key={i}>
-                    <td>{new Date(p.date).toLocaleDateString()}</td>
-                    <td>{p.amountType}</td>
-                    <td>{p.amount}</td>
-                    <td>{p.addedBy?.name}</td>
-                    <td className="text-green-500 font-bold">Paid</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+        <PaidPaymentsSection payments={reversedPaidPayments} />
+
+        <AttendanceSummary attendance={student?.attendance || []} />
+
       </div>
 
       {/* Change Password Modal */}

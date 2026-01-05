@@ -85,7 +85,7 @@ const Faculty = () => {
       {unapprovedFaculty.length > 0 && (
         <div className="bg-white rounded-2xl shadow-xl p-6">
           <h2 className="text-2xl font-bold text-red-600 mb-6">
-            Pending Faculty Approvals
+            Pending Management Approvals
           </h2>
 
           <div className="overflow-x-auto">
