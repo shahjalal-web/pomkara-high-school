@@ -48,7 +48,7 @@ const AttendanceSummary = ({ attendance = [] }) => {
       {/* Filters */}
       <div className="grid md:grid-cols-4 gap-3 mb-4">
         <select
-          className="select select-bordered"
+          className="select select-bordered bg-white"
           value={filter}
           onChange={(e) => {
             setFilter(e.target.value);
@@ -65,7 +65,7 @@ const AttendanceSummary = ({ attendance = [] }) => {
         {filter === "year" && (
           <input
             type="number"
-            className="input input-bordered"
+            className="input input-bordered bg-blue-200 text-black"
             placeholder="Enter year (2026)"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
@@ -75,7 +75,7 @@ const AttendanceSummary = ({ attendance = [] }) => {
         {filter === "month" && (
           <input
             type="month"
-            className="input input-bordered"
+            className="input input-bordered bg-blue-400 text-black"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
@@ -85,13 +85,13 @@ const AttendanceSummary = ({ attendance = [] }) => {
           <>
             <input
               type="date"
-              className="input input-bordered"
+              className="input input-bordered bg-blue-400 text-black"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
             <input
               type="date"
-              className="input input-bordered"
+              className="input input-bordered bg-blue-400 text-black"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />

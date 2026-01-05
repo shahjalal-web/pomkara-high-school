@@ -117,7 +117,7 @@ const ResultSection = ({ results = [] }) => {
       {/* FILTERS */}
       <div className="grid md:grid-cols-5 gap-3 mb-4">
         <select
-          className="select select-bordered"
+          className="select select-bordered bg-white"
           value={examFilter}
           onChange={(e) => setExamFilter(e.target.value)}
         >
@@ -130,7 +130,7 @@ const ResultSection = ({ results = [] }) => {
         </select>
 
         <select
-          className="select select-bordered"
+          className="select select-bordered bg-white"
           value={yearFilter}
           onChange={(e) => setYearFilter(e.target.value)}
         >
@@ -145,7 +145,7 @@ const ResultSection = ({ results = [] }) => {
         </select>
 
         <select
-          className="select select-bordered"
+          className="select select-bordered bg-white"
           value={subjectFilter}
           onChange={(e) => setSubjectFilter(e.target.value)}
         >
@@ -158,7 +158,7 @@ const ResultSection = ({ results = [] }) => {
         </select>
 
         <select
-          className="select select-bordered"
+          className="select select-bordered bg-white"
           value={passFilter}
           onChange={(e) => setPassFilter(e.target.value)}
         >
