@@ -75,7 +75,7 @@ const AttendanceSummary = ({ attendance = [] }) => {
         {filter === "month" && (
           <input
             type="month"
-            className="input input-bordered bg-blue-400 text-black"
+            className="input input-bordered bg-blue-300 text-white"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
