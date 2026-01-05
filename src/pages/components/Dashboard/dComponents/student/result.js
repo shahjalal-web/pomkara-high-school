@@ -181,39 +181,41 @@ const ResultSection = ({ results = [] }) => {
       </div>
 
       {/* TABLE */}
-      <table className="table w-full">
-        <thead className="bg-indigo-600 text-white">
-          <tr>
-            <th>Exam</th>
-            <th>Subject</th>
-            <th>Marks</th>
-            <th>Date</th>
-            <th>Uploaded By</th>
-          </tr>
-        </thead>
+      <div className="w-full overflow-x-auto">
+  <table className="table w-full min-w-[850px]">
+    <thead className="bg-indigo-600 text-white">
+      <tr>
+        <th>Exam</th>
+        <th>Subject</th>
+        <th>Marks</th>
+        <th>Date</th>
+        <th>Uploaded By</th>
+      </tr>
+    </thead>
 
-        <tbody>
-          {(showAllResults
-            ? filteredResults
-            : filteredResults?.slice(0, 4)
-          )?.map((r, i) => (
-            <tr key={i}>
-              <td>{r.examType}</td>
-              <td>{r.subject}</td>
-              <td>
-                {r.result} / {r.mark}{" "}
-                {isPass(r.result, r.mark) ? (
-                  <span className="text-green-600 ml-1 text-sm">(Pass)</span>
-                ) : (
-                  <span className="text-red-500 ml-1 text-sm">(Fail)</span>
-                )}
-              </td>
-              <td>{new Date(r.date).toLocaleDateString()}</td>
-              <td>{r.addedBy?.name}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <tbody>
+      {(showAllResults ? filteredResults : filteredResults?.slice(0, 4))?.map(
+        (r, i) => (
+          <tr key={i} className="whitespace-nowrap">
+            <td>{r.examType}</td>
+            <td>{r.subject}</td>
+            <td>
+              {r.result} / {r.mark}{" "}
+              {isPass(r.result, r.mark) ? (
+                <span className="text-green-600 ml-1 text-sm">(Pass)</span>
+              ) : (
+                <span className="text-red-500 ml-1 text-sm">(Fail)</span>
+              )}
+            </td>
+            <td>{new Date(r.date).toLocaleDateString()}</td>
+            <td>{r.addedBy?.name}</td>
+          </tr>
+        )
+      )}
+    </tbody>
+  </table>
+</div>
+
 
       {filteredResults?.length > 6 && (
         <div className="mt-3 text-center">

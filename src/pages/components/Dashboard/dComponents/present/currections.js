@@ -62,7 +62,7 @@ const toggleAttendance = async (student) => {
       {/* filters */}
       <div className="grid md:grid-cols-3 gap-3">
         <select
-          className="select select-bordered"
+          className="select select-bordered bg-white text-black"
           value={className}
           onChange={(e) => setClassName(e.target.value)}
         >
@@ -77,7 +77,7 @@ const toggleAttendance = async (student) => {
 
         <input
           type="date"
-          className="input input-bordered"
+          className="input input-bordered bg-blue-300 text-black"
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
@@ -92,60 +92,65 @@ const toggleAttendance = async (student) => {
       </div>
 
       {/* table */}
-      {students?.length > 0 && (
-        <div className="bg-white rounded-xl shadow p-4">
-          <table className="table w-full">
-            <thead className="bg-indigo-600 text-white">
-              <tr>
-                <th>Name</th>
-                <th>Roll</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+     {students?.length > 0 && (
+  <div className="bg-white rounded-xl shadow p-4">
 
-            <tbody>
-              {students.map((s) => (
-                <tr key={s._id}>
-                  <td>{s.name}</td>
-                  <td>{s.class_role}</td>
+    {/* ⬇️ scroll wrapper */}
+    <div className="w-full overflow-x-auto">
+      <table className="table w-full md:min-w-[750px]">
+        <thead className="bg-indigo-600 text-white">
+          <tr>
+            <th>Name</th>
+            <th>Roll</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
 
-                  <td>
-                    {s.todayAttendance ? (
-                      s.todayAttendance.isPresent ? (
-                        <span className="text-green-600 font-bold">
-                          Present
-                        </span>
-                      ) : (
-                        <span className="text-red-500 font-bold">
-                          Absent
-                        </span>
-                      )
-                    ) : (
-                      <span className="text-gray-400 text-sm">
-                        No attendance this day
-                      </span>
-                    )}
-                  </td>
+        <tbody>
+          {students.map((s) => (
+            <tr key={s._id} className="whitespace-nowrap">
+              <td>{s.name}</td>
+              <td>{s.class_role}</td>
 
-                  <td>
-                    {s.todayAttendance && (
-                      <button
-                        className="btn btn-sm bg-indigo-500 text-white"
-                        onClick={() => toggleAttendance(s)}
-                      >
-                        {s.todayAttendance.isPresent
-                          ? "Mark Absent"
-                          : "Mark Present"}
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              <td>
+                {s.todayAttendance ? (
+                  s.todayAttendance.isPresent ? (
+                    <span className="text-green-600 font-bold">
+                      Present
+                    </span>
+                  ) : (
+                    <span className="text-red-500 font-bold">
+                      Absent
+                    </span>
+                  )
+                ) : (
+                  <span className="text-gray-400 text-sm">
+                    No attendance this day
+                  </span>
+                )}
+              </td>
+
+              <td>
+                {s.todayAttendance && (
+                  <button
+                    className={`btn btn-sm text-white ${s.todayAttendance.isPresent ? "bg-red-400" : "bg-green-500"}`}
+                    onClick={() => toggleAttendance(s)}
+                  >
+                    {s.todayAttendance.isPresent
+                      ? "Mark Absent"
+                      : "Mark Present"}
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
 
       {!students?.length && (
         <p className="text-gray-500 text-sm">

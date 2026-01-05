@@ -53,7 +53,7 @@ const AttendancePage = () => {
       {/* SELECT CLASS */}
       <div className="flex gap-3">
         <select
-          className="select select-bordered w-full"
+          className="select select-bordered w-full bg-white text-black"
           value={className}
           onChange={(e) => setClassName(e.target.value)}
         >
