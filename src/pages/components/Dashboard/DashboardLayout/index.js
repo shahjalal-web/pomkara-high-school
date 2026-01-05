@@ -69,7 +69,7 @@ const DashboardLayout = ({ children }) => {
             </button>
 
             <h2 className="font-bold text-green-700 text-lg">
-              <Link onClick={toggleMenu} href="/components/Dashboard">Dashboard</Link>
+              <Link onClick={offMenu} href="/components/Dashboard">Dashboard</Link>
             </h2>
           </div>
 
