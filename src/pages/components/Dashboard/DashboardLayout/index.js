@@ -15,7 +15,7 @@ const DashboardLayout = ({ children }) => {
     { name: "Teacher", link: "/components/Dashboard/dComponents/teacher" },
     { name: "Management", link: "/components/Dashboard/dComponents/faculty" },
     { name: "All Students", link: "/components/Dashboard/dComponents/student" },
-    { name: "Roll Call", link: "/components/Dashboard/dComponents/present" },
+    { name: "Attendence", link: "/components/Dashboard/dComponents/present" },
     {
       name: "Attendance Currections",
       link: "/components/Dashboard/dComponents/present/currections",
@@ -58,12 +58,8 @@ const DashboardLayout = ({ children }) => {
         </aside>
 
         {/* Mobile Header */}
-        <div className="md:hidden w-full bg-white shadow-md fixed mt-3 left-0 z-50">
+        <div className="md:hidden w-full bg-white shadow-md fixed left-0 z-50">
           <div className="flex items-center justify-between px-4 py-3">
-            <h2 className="font-bold text-green-700 text-lg">
-              <Link href="/components/Dashboard">Dashboard</Link>
-            </h2>
-
             <button onClick={toggleMenu}>
               {menuOpen ? (
                 <FaTimes className="text-2xl text-green-700" />
@@ -71,6 +67,10 @@ const DashboardLayout = ({ children }) => {
                 <FaBars className="text-2xl text-green-700" />
               )}
             </button>
+
+            <h2 className="font-bold text-green-700 text-lg">
+              <Link onClick={toggleMenu} href="/components/Dashboard">Dashboard</Link>
+            </h2>
           </div>
 
           {menuOpen && (
