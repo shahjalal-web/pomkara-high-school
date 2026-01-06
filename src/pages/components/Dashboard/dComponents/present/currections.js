@@ -35,23 +35,22 @@ const AttendanceCorrectionPage = () => {
     setLoading(false);
   };
 
-const toggleAttendance = async (student) => {
-  const isPresent = student.todayAttendance?.isPresent;
+  const toggleAttendance = async (student) => {
+    const isPresent = student.todayAttendance?.isPresent;
 
-  const route = isPresent ? "absent" : "present";
+    const route = isPresent ? "absent" : "present";
 
-  await fetch(
-    `https://pomkara-high-school-server.vercel.app/students/attendance/mark-${route}/${student._id}`,
-    {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date }),
-    }
-  );
+    await fetch(
+      `https://pomkara-high-school-server.vercel.app/students/attendance/mark-${route}/${student._id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date }),
+      }
+    );
 
-  loadAttendance();
-};
-
+    loadAttendance();
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-5 space-y-5">
@@ -75,6 +74,7 @@ const toggleAttendance = async (student) => {
           <option value="exam batch">Exam Batch</option>
         </select>
 
+        <label className="md:hidden block ml-2">Select Date</label>
         <input
           type="date"
           className="input input-bordered bg-blue-300 text-black"
@@ -92,65 +92,61 @@ const toggleAttendance = async (student) => {
       </div>
 
       {/* table */}
-     {students?.length > 0 && (
-  <div className="bg-white rounded-xl shadow p-4">
+      {students?.length > 0 && (
+        <div className="bg-white rounded-xl shadow p-4">
+          {/* ⬇️ scroll wrapper */}
+          <div className="w-full overflow-x-auto">
+            <table className="table w-full md:min-w-[750px]">
+              <thead className="bg-indigo-600 text-white">
+                <tr>
+                  <th>Name</th>
+                  <th>Roll</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
 
-    {/* ⬇️ scroll wrapper */}
-    <div className="w-full overflow-x-auto">
-      <table className="table w-full md:min-w-[750px]">
-        <thead className="bg-indigo-600 text-white">
-          <tr>
-            <th>Name</th>
-            <th>Roll</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+              <tbody>
+                {students.map((s) => (
+                  <tr key={s._id} className="whitespace-nowrap">
+                    <td>{s.name}</td>
+                    <td>{s.class_role}</td>
 
-        <tbody>
-          {students.map((s) => (
-            <tr key={s._id} className="whitespace-nowrap">
-              <td>{s.name}</td>
-              <td>{s.class_role}</td>
+                    <td>
+                      {s.todayAttendance ? (
+                        s.todayAttendance.isPresent ? (
+                          <span className="text-green-600 font-bold">
+                            Present
+                          </span>
+                        ) : (
+                          <span className="text-red-500 font-bold">Absent</span>
+                        )
+                      ) : (
+                        <span className="text-gray-400 text-sm">
+                          No attendance this day
+                        </span>
+                      )}
+                    </td>
 
-              <td>
-                {s.todayAttendance ? (
-                  s.todayAttendance.isPresent ? (
-                    <span className="text-green-600 font-bold">
-                      Present
-                    </span>
-                  ) : (
-                    <span className="text-red-500 font-bold">
-                      Absent
-                    </span>
-                  )
-                ) : (
-                  <span className="text-gray-400 text-sm">
-                    No attendance this day
-                  </span>
-                )}
-              </td>
-
-              <td>
-                {s.todayAttendance && (
-                  <button
-                    className={`btn btn-sm text-white ${s.todayAttendance.isPresent ? "bg-red-400" : "bg-green-500"}`}
-                    onClick={() => toggleAttendance(s)}
-                  >
-                    {s.todayAttendance.isPresent
-                      ? "Mark Absent"
-                      : "Mark Present"}
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-)}
-
+                    <td>
+                      {s.todayAttendance && (
+                        <button
+                          className={`btn btn-sm text-white ${s.todayAttendance.isPresent ? "bg-red-400" : "bg-green-500"}`}
+                          onClick={() => toggleAttendance(s)}
+                        >
+                          {s.todayAttendance.isPresent
+                            ? "Mark Absent"
+                            : "Mark Present"}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {!students?.length && (
         <p className="text-gray-500 text-sm">
