@@ -53,8 +53,8 @@ export default function Teachers() {
     setLoading(true);
     try {
       const url = selectedDepartment
-        ? `https://pomkara-high-school-server.vercel.app/teachers?department=${selectedDepartment}`
-        : `https://pomkara-high-school-server.vercel.app/teachers`;
+        ? `https://pomkara-high-school-server.vercel.app/teachers_for_front_end?department=${selectedDepartment}`
+        : `https://pomkara-high-school-server.vercel.app/teachers_for_front_end`;
 
       const res = await fetch(url);
       const data = await res.json();

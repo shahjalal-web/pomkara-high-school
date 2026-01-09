@@ -1,18 +1,28 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useState } from "react";
+import DashboardLayout from "../../DashboardLayout";
 
 const MAX_TITLE_LENGTH = 28;
 
-export default function Dashboard() {
+const GalleryDashboard = () => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("events");
   const [filterCategory, setFilterCategory] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const [gallery, setGallery] = useState([]);
 
-  const categories = ["events", "campus", "activities", "achievements", "sports"];
+  const categories = [
+    "events",
+    "campus",
+    "activities",
+    "achievements",
+    "sports",
+  ];
 
   /* ---------------- FETCH GALLERY ---------------- */
   useEffect(() => {
@@ -20,13 +30,21 @@ export default function Dashboard() {
   }, [filterCategory]);
 
   const fetchGallery = async () => {
-    const url = filterCategory
-      ? `https://pomkara-high-school-server.vercel.app/gallery?category=${filterCategory}`
-      : "https://pomkara-high-school-server.vercel.app/gallery";
+    try {
+      setLoading(true);
 
-    const res = await fetch(url);
-    const data = await res.json();
-    setGallery(data);
+      const url = filterCategory
+        ? `https://pomkara-high-school-server.vercel.app/gallery?category=${filterCategory}`
+        : "https://pomkara-high-school-server.vercel.app/gallery";
+
+      const res = await fetch(url);
+      const data = await res.json();
+      setGallery(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ---------------- UPLOAD ---------------- */
@@ -61,8 +79,8 @@ export default function Dashboard() {
           title,
           category,
           imageUrl,
-          createdAt: new Date()
-        })
+          createdAt: new Date(),
+        }),
       });
 
       setTitle("");
@@ -82,11 +100,28 @@ export default function Dashboard() {
     if (!ok) return;
 
     await fetch(`https://pomkara-high-school-server.vercel.app/gallery/${id}`, {
-      method: "DELETE"
+      method: "DELETE",
     });
 
     setGallery((prev) => prev.filter((item) => item._id !== id));
   };
+
+  const SkeletonRow = () => (
+    <tr className="border-t animate-pulse">
+      <td className="p-3">
+        <div className="w-24 h-16 bg-gray-200 rounded" />
+      </td>
+      <td className="p-3">
+        <div className="h-4 bg-gray-200 rounded w-3/4" />
+      </td>
+      <td className="p-3">
+        <div className="h-4 bg-gray-200 rounded w-1/2" />
+      </td>
+      <td className="p-3 text-center">
+        <div className="h-8 bg-gray-200 rounded w-20 mx-auto" />
+      </td>
+    </tr>
+  );
 
   /* ---------------- UI ---------------- */
   return (
@@ -104,7 +139,9 @@ export default function Dashboard() {
           onChange={(e) => {
             setTitle(e.target.value);
             if (e.target.value.length > MAX_TITLE_LENGTH) {
-              setError(`Title must be less than ${MAX_TITLE_LENGTH} characters`);
+              setError(
+                `Title must be less than ${MAX_TITLE_LENGTH} characters`
+              );
             } else {
               setError("");
             }
@@ -180,7 +217,13 @@ export default function Dashboard() {
             </thead>
 
             <tbody>
-              {gallery.length === 0 ? (
+              {loading ? (
+                <>
+                  {[...Array(4)].map((_, i) => (
+                    <SkeletonRow key={i} />
+                  ))}
+                </>
+              ) : gallery.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="p-4 text-center text-gray-500">
                     No images found
@@ -215,4 +258,10 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+};
+
+export default GalleryDashboard;
+
+GalleryDashboard.getLayout = function getLayout(page) {
+  return <DashboardLayout>{page}</DashboardLayout>;
+};

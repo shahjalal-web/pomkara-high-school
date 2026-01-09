@@ -13,6 +13,8 @@ import {
   FaMoneyBillWave,
   FaChevronLeft,
   FaChevronRight,
+  FaImages,
+  FaEnvelopeOpenText,
 } from "react-icons/fa";
 import { useRouter } from "next/router";
 
@@ -66,12 +68,16 @@ const DashboardLayout = ({ children }) => {
       link: "/components/Dashboard/dComponents/addMoney",
       icon: <FaMoneyBillWave />,
     },
-
-    {
-      name: "Gallery",
-      link: "/components/Dashboard/dComponents/gallary",
-      icon: <FaMoneyBillWave />,
-    },
+  {
+    name: "Gallery",
+    link: "/components/Dashboard/dComponents/gallery",
+    icon: <FaImages />,
+  },
+  {
+    name: "Messages",
+    link: "/components/Dashboard/dComponents/messages",
+    icon: <FaEnvelopeOpenText />,
+  },
   ];
 
   return (

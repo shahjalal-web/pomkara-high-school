@@ -46,21 +46,22 @@ export default function Gallery() {
       </div>
 
       {/* Category Filter */}
-      <div className="flex gap-3 overflow-x-auto px-4 pb-6 justify-center">
-        {categories.map(cat => (
-          <button
-            key={cat.value}
-            onClick={() => setSelectedCategory(cat.value)}
-            className={`px-4 py-2 rounded-full whitespace-nowrap transition ${
-              selectedCategory === cat.value
-                ? "bg-blue-600 text-white"
-                : "text-gray-800 bg-gray-300 hover:bg-gray-700 hover:text-white"
-            }`}
-          >
-            {cat.icon} {cat.label}
-          </button>
-        ))}
-      </div>
+
+      <div className="flex flex-wrap justify-center gap-3 mb-10">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat.value)}
+              className={`px-4 py-2 rounded-full text-sm ${
+                selectedCategory === cat.value
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
+            >
+             {cat.icon} {cat.label}
+            </button>
+          ))}
+        </div>
 
       {/* Gallery */}
       <div className="h-[70vh]">

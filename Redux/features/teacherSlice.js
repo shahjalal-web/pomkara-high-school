@@ -67,60 +67,7 @@ const teacherSlice = createSlice({
       state.loading = false;
     },
   },
-  // extraReducers: (builder) => {
-  //   // Handling the asynchronous actions for fetching teachers
-  //   builder
-  //     .addCase(fetchTeacherData.pending, (state) => {
-  //       state.loading = true;
-  //       state.error = null;
-  //     })
-  //     .addCase(fetchTeacherData.fulfilled, (state, action) => {
-  //       state.teachers = action.payload;
-  //       state.loading = false;
-  //     })
-  //     .addCase(fetchTeacherData.rejected, (state, action) => {
-  //       state.error = action.error.message;
-  //       state.loading = false;
-  //     });
-
-  //   // Handling the asynchronous actions for approving a teacher
-  //   builder
-  //     .addCase(approveTeacher.pending, (state) => {
-  //       state.loading = true;
-  //       state.error = null;
-  //     })
-  //     .addCase(approveTeacher.fulfilled, (state, action) => {
-  //       state.teachers = state.teachers.map((teacher) =>
-  //         teacher._id === action.payload._id
-  //           ? { ...teacher, isApprove: true }
-  //           : teacher
-  //       );
-  //       state.loading = false;
-  //     })
-  //     .addCase(approveTeacher.rejected, (state, action) => {
-  //       state.error = action.error.message;
-  //       state.loading = false;
-  //     });
-
-  //   // Handling the asynchronous actions for unapproving a teacher
-  //   builder
-  //     .addCase(unapproveTeacher.pending, (state) => {
-  //       state.loading = true;
-  //       state.error = null;
-  //     })
-  //     .addCase(unapproveTeacher.fulfilled, (state, action) => {
-  //       state.teachers = state.teachers.map((teacher) =>
-  //         teacher._id === action.payload._id
-  //           ? { ...teacher, isApprove: false }
-  //           : teacher
-  //       );
-  //       state.loading = false;
-  //     })
-  //     .addCase(unapproveTeacher.rejected, (state, action) => {
-  //       state.error = action.error.message;
-  //       state.loading = false;
-  //     });
-  // },
+  
 });
 
 export const {

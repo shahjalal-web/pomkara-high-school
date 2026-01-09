@@ -19,7 +19,7 @@ export default function Contact() {
       phone: "9883066, 9895334, 8837393",
       email: "main@pumkara.edu.bd",
       isMain: true,
-    }
+    },
   ];
 
   const generalInfo = [
@@ -37,7 +37,6 @@ export default function Contact() {
       !formData.firstName ||
       !formData.lastName ||
       !formData.email ||
-      !formData.branch ||
       !formData.subject ||
       !formData.message
     ) {
@@ -47,16 +46,18 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("", {
+      const response = await fetch("https://pomkara-high-school-server.vercel.app/message", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
+        alert("Message sent successfully!");
         setFormData({
           firstName: "",
           lastName: "",
@@ -66,9 +67,11 @@ export default function Contact() {
           message: "",
         });
       } else {
-        throw new Error("Form submission failed");
+        alert(data.message || "Something went wrong");
       }
     } catch (error) {
+      console.error(error);
+      alert("Server error");
     } finally {
       setIsSubmitting(false);
     }
@@ -218,43 +221,17 @@ export default function Contact() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Email
+                    Phone
                   </label>
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent placeholder-white/70 text-white"
-                    placeholder="your.email@example.com"
+                    placeholder="your phone number"
                     required
                   />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Branch of Interest
-                  </label>
-                  <select
-                    name="branch"
-                    value={formData.branch}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-white"
-                    required
-                  >
-                    <option value="" className="text-gray-800">
-                      Select a branch
-                    </option>
-                    {branches.map((branch, index) => (
-                      <option
-                        key={index}
-                        value={branch.name}
-                        className="text-gray-800"
-                      >
-                        {branch.name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
 
                 <div>
