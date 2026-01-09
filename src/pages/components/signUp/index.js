@@ -246,7 +246,6 @@ const SignUp = () => {
           {/* About */}
           <textarea
             {...register("about")}
-            required
             rows={4}
             placeholder="Write about yourself (qualification, experience, etc.)"
             className="w-full textarea textarea-bordered bg-white text-black border-green-500"
@@ -264,7 +263,7 @@ const SignUp = () => {
               type="file"
               required
               {...register("image")}
-              className="file-input file-input-bordered w-full border-green-500"
+              className="file-input file-input-bordered w-full border-green-500 bg-white text-black"
             />
           </div>
 

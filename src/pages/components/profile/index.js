@@ -178,7 +178,7 @@ const Profile = () => {
                     }
                     {...register(field)}
                     required
-                    className="input input-bordered w-full pr-12"
+                    className="input input-bordered w-full pr-12 bg-white text-black"
                   />
                   <button
                     type="button"

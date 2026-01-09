@@ -1,176 +1,147 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useState } from "react";
+import ChromaGrid from "./ChromaGrid";
 
- function Teachers() {
+export default function Teachers() {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAll, setShowAll] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
-  const departments = ["Science", "Arts", "Commerce", "Mathematics", "English", "Bangla"];
+  const departments = [
+    "Science",
+    "Arts",
+    "Commerce",
+    "Mathematics",
+    "English",
+    "Bangla",
+  ];
+
+  const DEPARTMENT_COLORS = {
+    science: {
+      border: "#2563EB",
+      gradient: "linear-gradient(145deg,#2563EB,#000)",
+    },
+    arts: {
+      border: "#F59E0B",
+      gradient: "linear-gradient(145deg,#F59E0B,#000)",
+    },
+    commerce: {
+      border: "#10B981",
+      gradient: "linear-gradient(145deg,#10B981,#000)",
+    },
+    mathematics: {
+      border: "#8B5CF6",
+      gradient: "linear-gradient(145deg,#8B5CF6,#000)",
+    },
+    english: {
+      border: "#EF4444",
+      gradient: "linear-gradient(145deg,#EF4444,#000)",
+    },
+    bangla: {
+      border: "#06B6D4",
+      gradient: "linear-gradient(145deg,#06B6D4,#000)",
+    },
+  };
 
   useEffect(() => {
-    setLoading(true);
-    const fetchTeachers = async () => {
-      try {
-        const res = await fetch(
-          `/api/teachers?department=${selectedDepartment}&limit=${showAll ? 50 : 5}`
-        );
-        const data = await res.json();
-        setTeachers(data || []);
-      } catch (error) {
-        console.error("Failed to fetch teachers:", error);
-        setTeachers([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTeachers();
-  }, [selectedDepartment, showAll]);
+  }, [selectedDepartment]);
+
+  const fetchTeachers = async () => {
+    setLoading(true);
+    try {
+      const url = selectedDepartment
+        ? `https://pomkara-high-school-server.vercel.app/teachers?department=${selectedDepartment}`
+        : `https://pomkara-high-school-server.vercel.app/teachers`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+      console.log(data, "teacher");
+      setTeachers(data);
+    } catch {
+      setTeachers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* 🔁 Convert teacher → ChromaGrid item */
+  const chromaItems = teachers.map((t) => {
+    const deptKey = t.group?.toLowerCase() || "science";
+    const color = DEPARTMENT_COLORS[deptKey] || DEPARTMENT_COLORS.science;
+
+    return {
+      image: t.image || "https://i.pravatar.cc/300",
+      title: t.name,
+      subtitle: t.number || "—",
+      handle: deptKey.toUpperCase(),
+      borderColor: color.border,
+      gradient: color.gradient,
+      url: t.image || "",
+    };
+  });
 
   return (
     <section id="teachers" className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-16 animate-fadeInUp">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">
+        {/* Header */}
+        <div className="text-center mb-14">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">
             Our <span className="text-blue-600">Teachers</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Meet our dedicated and experienced faculty members who are committed to providing quality education and shaping the future of our students.
+          <p className="text-gray-600 max-w-3xl mx-auto">
+            Meet our dedicated and experienced faculty members.
           </p>
-
-          {/* Department Filter */}
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
-            <button
-              onClick={() => setSelectedDepartment("")}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedDepartment === ""
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              All Departments
-            </button>
-            {departments.map((dept) => (
-              <button
-                key={dept}
-                onClick={() => setSelectedDepartment(dept)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  selectedDepartment === dept
-                    ? "bg-blue-600 text-white shadow-lg"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                {dept}
-              </button>
-            ))}
-          </div>
         </div>
 
-        {/* Loading Spinner */}
+        {/* Department Filter */}
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          <button
+            onClick={() => setSelectedDepartment("")}
+            className={`px-4 py-2 rounded-full text-sm ${
+              selectedDepartment === ""
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
+            }`}
+          >
+            All Departments
+          </button>
+
+          {departments.map((dept) => (
+            <button
+              key={dept}
+              onClick={() => setSelectedDepartment(dept)}
+              className={`px-4 py-2 rounded-full text-sm ${
+                selectedDepartment === dept
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
+            >
+              {dept}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
         {loading ? (
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="text-center py-20">
+            <div className="animate-spin h-10 w-10 border-b-2 border-blue-600 mx-auto" />
           </div>
         ) : teachers.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">👨‍🏫</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">No Teachers Available</h3>
-            <p className="text-gray-600">
-              {selectedDepartment
-                ? `No teachers found in ${selectedDepartment} department. Check back later for updates.`
-                : "No teachers found. Check back later for updates."}
-            </p>
+          <div className="text-center py-16 text-gray-500">
+            No teachers found.
           </div>
         ) : (
-          <>
-            {/* Teachers Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
-              {teachers.map((teacher, index) => (
-                <div
-                  key={teacher._id}
-                  className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fadeInUp card-hover"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="p-4">
-                    {/* Teacher Image */}
-                    <div className="relative mb-4">
-                      {teacher.imageUrl ? (
-                        <img
-                          src={teacher.imageUrl}
-                          alt={teacher.name}
-                          className="w-20 h-20 rounded-full object-cover mx-auto border-4 border-blue-100"
-                        />
-                      ) : (
-                        <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center mx-auto border-4 border-blue-100">
-                          <span className="text-white text-2xl font-bold">
-                            {teacher.name?.charAt(0)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Teacher Info */}
-                    <div className="text-center">
-                      <h3 className="text-lg font-bold text-gray-800 mb-1 line-clamp-2">
-                        {teacher.name}
-                      </h3>
-                      <p className="text-blue-600 font-medium text-sm mb-1">
-                        {teacher.designation}
-                      </p>
-                      <p className="text-gray-500 text-sm mb-2">{teacher.department}</p>
-
-                      <div className="space-y-1 text-xs text-gray-600">
-                        <p>
-                          <span className="font-medium">Qualification:</span>{" "}
-                          {teacher.qualification}
-                        </p>
-                        <p>
-                          <span className="font-medium">Experience:</span>{" "}
-                          {teacher.experience}
-                        </p>
-                      </div>
-
-                      {teacher.bio && (
-                        <p className="text-gray-600 text-xs mt-2 line-clamp-2">{teacher.bio}</p>
-                      )}
-
-                      {(teacher.email || teacher.phone) && (
-                        <div className="mt-3 pt-3 border-t border-gray-100">
-                          {teacher.email && (
-                            <p className="text-xs text-gray-500 mb-1">📧 {teacher.email}</p>
-                          )}
-                          {teacher.phone && (
-                            <p className="text-xs text-gray-500">📞 {teacher.phone}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Show More/Less Button */}
-            {teachers.length >= 5 && (
-              <div className="text-center animate-fadeInUp">
-                <button
-                  onClick={() => setShowAll(!showAll)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg btn-animate"
-                >
-                  {showAll ? "Show Less" : `See All Teachers (${teachers.length}+)`}
-                </button>
-              </div>
-            )}
-          </>
+          <ChromaGrid
+            items={chromaItems}
+            radius={320}
+            damping={0.5}
+            fadeOut={0.6}
+          />
         )}
       </div>
     </section>
   );
 }
-
-
-export default Teachers;

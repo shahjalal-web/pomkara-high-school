@@ -66,6 +66,12 @@ const DashboardLayout = ({ children }) => {
       link: "/components/Dashboard/dComponents/addMoney",
       icon: <FaMoneyBillWave />,
     },
+
+    {
+      name: "Gallery",
+      link: "/components/Dashboard/dComponents/gallary",
+      icon: <FaMoneyBillWave />,
+    },
   ];
 
   return (
