@@ -1,5 +1,6 @@
 // pages/about.js
 import Head from "next/head";
+import ElectricBorder from "./ElectricBorder";
 
 export default function About() {
   const stats = [
@@ -53,9 +54,9 @@ export default function About() {
               About Our <span className="text-blue-600">Institution</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Located in the Pumkara, B-para, Cumilla. our
-              institution has been a beacon of educational excellence, nurturing
-              young minds and shaping future leaders for over five decades.
+              Located in the Pumkara, B-para, Cumilla. our institution has been
+              a beacon of educational excellence, nurturing young minds and
+              shaping future leaders for over five decades.
             </p>
           </div>
 
@@ -98,24 +99,43 @@ export default function About() {
 
           {/* Mission & Vision */}
           <div className="mt-20 grid md:grid-cols-2 gap-12">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-2xl text-white animate-fadeInLeft">
-              <h3 className="text-3xl font-bold mb-6">Our Mission</h3>
-              <p className="text-lg leading-relaxed">
-                To provide quality education that empowers students with
-                knowledge, skills, and values necessary to become responsible
-                citizens and leaders of tomorrow, while fostering creativity,
-                critical thinking, and moral character.
-              </p>
-            </div>
-            <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-8 rounded-2xl text-white animate-fadeInRight">
-              <h3 className="text-3xl font-bold mb-6">Our Vision</h3>
-              <p className="text-lg leading-relaxed">
-                To be a leading educational institution that nurtures
-                excellence, innovation, and integrity, preparing students to
-                excel in a rapidly changing global society while maintaining
-                strong cultural values and social responsibility.
-              </p>
-            </div>
+            {/* Mission */}
+            <ElectricBorder
+              color="#2563EB"
+              speed={1.2}
+              chaos={0.12}
+              borderRadius={24}
+              className="p-1"
+            >
+              <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 rounded-2xl p-8 text-white">
+                <h3 className="text-3xl font-bold mb-6">Our Mission</h3>
+                <p className="text-lg leading-relaxed text-blue-100">
+                  To provide quality education that empowers students with
+                  knowledge, skills, and values necessary to become responsible
+                  citizens and leaders of tomorrow, while fostering creativity,
+                  critical thinking, and moral character.
+                </p>
+              </div>
+            </ElectricBorder>
+
+            {/* Vision */}
+            <ElectricBorder
+              color="#EC4899"
+              speed={1.2}
+              chaos={0.14}
+              borderRadius={24}
+              className="p-1"
+            >
+              <div className="bg-gradient-to-br from-purple-900 via-fuchsia-800 to-pink-900 rounded-2xl p-8 text-white">
+                <h3 className="text-3xl font-bold mb-6">Our Vision</h3>
+                <p className="text-lg leading-relaxed text-pink-100">
+                  To be a leading educational institution that nurtures
+                  excellence, innovation, and integrity, preparing students to
+                  excel in a rapidly changing global society while maintaining
+                  strong cultural values and social responsibility.
+                </p>
+              </div>
+            </ElectricBorder>
           </div>
         </div>
       </section>
