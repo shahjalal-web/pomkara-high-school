@@ -148,7 +148,7 @@ const DashboardLayout = ({ children }) => {
             {/* Mobile Dropdown Menu */}
             <div
               className={`overflow-hidden transition-all duration-300 ${
-                mobileMenuOpen ? "max-h-[500px] mt-4" : "max-h-0"
+                mobileMenuOpen ? " mt-4" : "max-h-0"
               }`}
             >
               <ul className="bg-gray-50 rounded-xl p-2 space-y-1 border">

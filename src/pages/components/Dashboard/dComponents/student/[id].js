@@ -3,17 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState, useMemo } from "react";
 import DashboardLayout from "../../DashboardLayout";
 import ReactModal from "react-modal";
-import { IoReloadOutline } from "react-icons/io5";
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  Cell,
-} from "recharts";
+
 import ResultSection from "./result";
 import DuePaymentsSection from "./duePayment";
 import PaidPaymentsSection from "./paidPayment";
@@ -41,7 +31,6 @@ const StudentDetails = () => {
   const [result, setResult] = useState(0);
   const [mark, setFullMark] = useState(0);
   const [success, setSuccess] = useState("");
-  const [showAllResults, setShowAllResults] = useState(false);
 
   // ⭐ NEW FILTER STATES
   const [examFilter, setExamFilter] = useState("");
@@ -92,9 +81,6 @@ const StudentDetails = () => {
     setAmountType("");
     setError("");
   };
-
-  // ================== EXISTING FUNCTIONS (unchanged) ==================
-  // ... (👉 তোমার আগের সব function আগের মতোই আছে, নিচে 그대로 রাখা হলো)
 
   const handleAddAmount = async (studentId) => {
     setError("");
@@ -244,32 +230,6 @@ const StudentDetails = () => {
       );
   }, [student, examFilter, yearFilter, subjectFilter, passFilter]);
 
-  const chartData = useMemo(() => {
-    if (!filteredResults) return [];
-
-    const map = {};
-
-    filteredResults.forEach((r) => {
-      const percent = (Number(r.result) / Number(r.mark)) * 100;
-
-      if (!map[r.subject]) {
-        map[r.subject] = {
-          subject: r.subject,
-          totalPercent: 0,
-          count: 0,
-        };
-      }
-
-      map[r.subject].totalPercent += percent;
-      map[r.subject].count += 1;
-    });
-
-    return Object.values(map).map((item) => ({
-      subject: item.subject,
-      avgPercent: Math.round(item.totalPercent / item.count),
-    }));
-  }, [filteredResults]);
-
   if (!student)
     return (
       <div className="mt-5 text-center">
@@ -368,18 +328,16 @@ const StudentDetails = () => {
         </div>
       )}
 
+      <AttendanceSummary attendance={student?.attendance || []} />
+
+      {/* ================= RESULT TABLE (WITH FILTER) ================= */}
+      <ResultSection results={student?.result || []} />
       {/* Due Payments */}
       <DuePaymentsSection payments={reversedDuePayments} />
 
       {/* Paid Payments */}
 
       <PaidPaymentsSection payments={reversedPaidPayments} />
-
-      {/* ================= RESULT TABLE (WITH FILTER) ================= */}
-      <ResultSection results={student?.result || []} />
-
-      
-        <AttendanceSummary attendance={student?.attendance || []} />
 
       {/* ================= ADD DUE MODAL ================= */}
       <ReactModal
@@ -399,10 +357,25 @@ const StudentDetails = () => {
           <option disabled selected>
             Select Fee Type
           </option>
-          <option value="monthly_fee">Monthly Fee</option>
+          <option value="admission_fee">Admission Fee</option>
+          <option value="tuition_fee">Tuition / Monthly Fee</option>
           <option value="exam_fee">Exam Fee</option>
-          <option value="session_fee">Session Fee</option>
-          <option value="fine">Fine</option>
+          <option value="registration_fee">Registration Fee</option>
+          <option value="library_fee">Library Fee</option>
+          <option value="transport_fee">Transport / Bus Fee</option>
+          <option value="hostel_fee">Hostel Fee</option>
+          <option value="lab_fee">Laboratory Fee</option>
+          <option value="sports_fee">Sports Fee</option>
+          <option value="computer_fee">Computer Fee</option>
+          <option value="activity_fee">Co-curricular / Activity Fee</option>
+          <option value="id_card_fee">ID Card / Replacement Fee</option>
+          <option value="certificate_fee">Certificate Fee</option>
+          <option value="uniform_fee">Uniform Fee</option>
+          <option value="book_fee">Books & Stationery</option>
+          <option value="maintenance_fee">Maintenance / Development Fee</option>
+          <option value="late_fee">Late Fee</option>
+          <option value="fine">Fine / Penalty</option>
+          <option value="others">Others</option>
         </select>
 
         <input

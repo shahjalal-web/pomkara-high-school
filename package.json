@@ -14,9 +14,13 @@
     "@tanstack/react-query": "^5.52.1",
     "axios": "^1.7.4",
     "browser-image-compression": "^2.0.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "convex": "^1.25.4",
     "firebase": "^10.13.0",
     "gsap": "^3.14.2",
+    "lucide-react": "^0.562.0",
+    "motion": "^12.25.0",
     "next": "14.2.5",
     "next-redux-wrapper": "^8.1.0",
     "next-sitemap": "^4.2.3",
@@ -29,7 +33,9 @@
     "react-redux": "^9.1.2",
     "react-toastify": "^11.0.5",
     "recharts": "^3.6.0",
-    "redux-thunk": "^3.1.0"
+    "redux-thunk": "^3.1.0",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "daisyui": "^4.12.10",

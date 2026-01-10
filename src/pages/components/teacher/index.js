@@ -1,8 +1,9 @@
+/* eslint-disable react/jsx-key */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect, useState } from "react";
-import ChromaGrid from "./ChromaGrid";
+import { useEffect, useMemo, useState } from "react";
+import Stack from "./Stack"; // ✅ ChromaGrid removed
 
 export default function Teachers() {
   const [teachers, setTeachers] = useState([]);
@@ -19,30 +20,12 @@ export default function Teachers() {
   ];
 
   const DEPARTMENT_COLORS = {
-    science: {
-      border: "#2563EB",
-      gradient: "linear-gradient(145deg,#2563EB,#000)",
-    },
-    arts: {
-      border: "#F59E0B",
-      gradient: "linear-gradient(145deg,#F59E0B,#000)",
-    },
-    commerce: {
-      border: "#10B981",
-      gradient: "linear-gradient(145deg,#10B981,#000)",
-    },
-    mathematics: {
-      border: "#8B5CF6",
-      gradient: "linear-gradient(145deg,#8B5CF6,#000)",
-    },
-    english: {
-      border: "#EF4444",
-      gradient: "linear-gradient(145deg,#EF4444,#000)",
-    },
-    bangla: {
-      border: "#06B6D4",
-      gradient: "linear-gradient(145deg,#06B6D4,#000)",
-    },
+    science: { badge: "bg-blue-600", ring: "ring-blue-500/40" },
+    arts: { badge: "bg-amber-500", ring: "ring-amber-500/40" },
+    commerce: { badge: "bg-emerald-600", ring: "ring-emerald-500/40" },
+    mathematics: { badge: "bg-violet-600", ring: "ring-violet-500/40" },
+    english: { badge: "bg-red-500", ring: "ring-red-500/40" },
+    bangla: { badge: "bg-cyan-600", ring: "ring-cyan-500/40" },
   };
 
   useEffect(() => {
@@ -58,7 +41,6 @@ export default function Teachers() {
 
       const res = await fetch(url);
       const data = await res.json();
-      console.log(data, "teacher");
       setTeachers(data);
     } catch {
       setTeachers([]);
@@ -67,24 +49,53 @@ export default function Teachers() {
     }
   };
 
-  /* 🔁 Convert teacher → ChromaGrid item */
-  const chromaItems = teachers.map((t) => {
-    const deptKey = t.group?.toLowerCase() || "science";
-    const color = DEPARTMENT_COLORS[deptKey] || DEPARTMENT_COLORS.science;
+  /* ✅ teachers -> cards */
+  const cards = useMemo(() => {
+    return teachers.map((t) => {
+      const deptKey = (t.group || "science").toLowerCase();
+      const style = DEPARTMENT_COLORS[deptKey] || DEPARTMENT_COLORS.science;
 
-    return {
-      image: t.image || "https://i.pravatar.cc/300",
-      title: t.name,
-      subtitle: t.number || "—",
-      handle: deptKey.toUpperCase(),
-      borderColor: color.border,
-      gradient: color.gradient,
-      url: t.image || "",
-    };
-  });
+      return (
+        <div className="w-full h-full relative">
+          {/* Background image */}
+          <img
+            src={t.image || "https://i.pravatar.cc/500"}
+            alt={t.name}
+            className="w-full h-full object-cover pointer-events-none"
+          />
+
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+
+          {/* Info */}
+          <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-xl font-bold truncate">{t.name}</h3>
+              <span className={`text-xs px-3 py-1 rounded-full ${style.badge}`}>
+                {deptKey.toUpperCase()}
+              </span>
+            </div>
+
+            <p className="text-sm text-white/80 mt-1">📞 {t.number || "—"}</p>
+
+            {t.subjects?.length > 0 && (
+              <p className="text-xs text-white/70 mt-2 line-clamp-2">
+                Subjects: {t.subjects.join(", ")}
+              </p>
+            )}
+          </div>
+
+          {/* Glow ring */}
+          <div
+            className={`absolute inset-0 ring-4 ${style.ring} rounded-2xl`}
+          />
+        </div>
+      );
+    });
+  }, [teachers]);
 
   return (
-    <section id="teachers" className="py-20 bg-white">
+    <section id="teachers" className="py-20 bg-white overflow-x-hidden">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-14">
@@ -100,7 +111,7 @@ export default function Teachers() {
         <div className="flex flex-wrap justify-center gap-3 mb-10">
           <button
             onClick={() => setSelectedDepartment("")}
-            className={`px-4 py-2 rounded-full text-sm ${
+            className={`px-4 py-2 rounded-full text-sm transition ${
               selectedDepartment === ""
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
@@ -113,7 +124,7 @@ export default function Teachers() {
             <button
               key={dept}
               onClick={() => setSelectedDepartment(dept)}
-              className={`px-4 py-2 rounded-full text-sm ${
+              className={`px-4 py-2 rounded-full text-sm transition ${
                 selectedDepartment === dept
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 hover:bg-gray-200"
@@ -134,12 +145,27 @@ export default function Teachers() {
             No teachers found.
           </div>
         ) : (
-          <ChromaGrid
-            items={chromaItems}
-            radius={320}
-            damping={0.5}
-            fadeOut={0.6}
-          />
+          <div className="w-full flex justify-center">
+            <div className="w-[92%] max-w-[360px] md:max-w-lg mx-auto">
+              {/* ✅ allow stack peeking */}
+              <div className="relative w-full h-[420px] md:h-[520px] overflow-visible">
+                <Stack
+                  cards={cards}
+                  randomRotation={false}
+                  sensitivity={180}
+                  sendToBackOnClick={true}
+                  autoplay={true}
+                  autoplayDelay={3500}
+                  pauseOnHover={true}
+                  mobileClickOnly={true}
+                />
+              </div>
+
+              <p className="text-center text-sm text-gray-500 mt-6">
+                Drag or click cards to browse teachers.
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </section>
