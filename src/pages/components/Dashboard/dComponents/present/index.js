@@ -6,45 +6,109 @@ import DashboardLayout from "../../DashboardLayout";
 const AttendancePage = () => {
   const [className, setClassName] = useState("");
   const [students, setStudents] = useState([]);
+  const [attendanceMap, setAttendanceMap] = useState({}); // ✅ checked = present
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
 
-  // CREATE ATTENDANCE
+  // ✅ Helper: today এর আগের last attendance date বের করবে (১ দিন আগের না)
+  const getLastAttendanceDate = (attendanceArr = []) => {
+    if (!attendanceArr.length) return null;
+
+    const dates = attendanceArr
+      .map((a) => a.date)
+      .filter((d) => d && d < today) // only before today
+      .sort();
+
+    if (dates.length === 0) return null;
+
+    return dates[dates.length - 1]; // last date
+  };
+
+  // ✅ CREATE / LOAD ATTENDANCE
   const createAttendance = async () => {
     if (!className) return alert("Please select a class");
 
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const res = await fetch(
-      `https://pomkara-high-school-server.vercel.app/students/attendance/create/${className}`,
-      { method: "PATCH" }
-    );
+      const res = await fetch(
+        `https://pomkara-high-school-server.vercel.app/students/attendance/create/${className}`,
+        { method: "PATCH" }
+      );
 
-    const data = await res.json();
-    setStudents(data.students || []);
-    setLoading(false);
+      const data = await res.json();
+      const list = data.students || [];
+      setStudents(list);
+
+      // ✅ default: everyone checked (Present)
+      const initialMap = {};
+      list.forEach((s) => {
+        initialMap[s._id] = true;
+      });
+      setAttendanceMap(initialMap);
+    } catch (err) {
+      console.log(err);
+      alert("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // MARK PRESENT
-  const markPresent = async (id) => {
-    await fetch(`https://pomkara-high-school-server.vercel.app/students/attendance/mark-present/${id}`, {
-      method: "PATCH",
-    });
-
-    // Refresh
-    createAttendance();
+  // ✅ Toggle checkbox (Present)
+  const toggleAttendance = (id) => {
+    setAttendanceMap((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
 
-  // MARK ABSENT
-  const markAbsent = async (id) => {
-    await fetch(`https://pomkara-high-school-server.vercel.app/students/attendance/mark-absent/${id}`, {
-      method: "PATCH",
-    });
+  // ✅ SUBMIT Attendance
+  const submitAttendance = async () => {
+    if (students.length === 0) return alert("No students found");
 
-    // Refresh
-    createAttendance();
+    try {
+      setSubmitting(true);
+
+      const presentIds = [];
+      const absentIds = [];
+
+      students.forEach((s) => {
+        if (attendanceMap[s._id])
+          presentIds.push(s._id); // ✅ checked => present
+        else absentIds.push(s._id); // ❌ unchecked => absent
+      });
+
+      const res = await fetch(
+        `https://pomkara-high-school-server.vercel.app/students/attendance/submit`,
+        {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            className,
+            date: today,
+            presentIds,
+            absentIds,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) return alert(data.message || "Submit failed ❌");
+
+      alert("Attendance submitted successfully ✅");
+    } catch (err) {
+      console.log(err);
+      alert("Server error!");
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  const presentCount = Object.values(attendanceMap).filter(Boolean).length;
+  const absentCount = students.length - presentCount;
 
   return (
     <div className="max-w-4xl mx-auto p-5 space-y-5">
@@ -77,51 +141,86 @@ const AttendancePage = () => {
 
       {/* STUDENT LIST */}
       {students.length > 0 && (
-        <div className="bg-white rounded-xl shadow p-4">
-          <h2 className="font-bold mb-3">Attendance — {today}</h2>
+        <div className="bg-white rounded-xl shadow p-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold">Attendance — {today}</h2>
+          </div>
 
           <table className="table w-full">
             <thead className="bg-green-600 text-white">
               <tr>
                 <th>Name</th>
                 <th>Roll</th>
-                <th>Status</th>
+                <th className="text-center">Present?</th>
               </tr>
             </thead>
 
             <tbody>
               {students.map((s) => {
-                const todayAttendance = s.attendance?.find(
-                  (a) => a.date === today
-                );
+                // ✅ last attendance date find (today এর আগের)
+                const lastDate = getLastAttendanceDate(s.attendance || []);
+
+                // ✅ last date attendance find
+                const lastAttendance = lastDate
+                  ? s.attendance?.find((a) => a.date === lastDate)
+                  : null;
+
+                // ✅ last attendance এ absent হলে red
+                const wasAbsentLastTime =
+                  lastAttendance && lastAttendance.isPresent === false;
 
                 return (
                   <tr key={s._id}>
-                    <td>{s.name}</td>
+                    <td
+                      className={`font-medium ${
+                        wasAbsentLastTime ? "text-red-600" : "text-black"
+                      }`}
+                      title={
+                        wasAbsentLastTime
+                          ? `Absent on last attendance (${lastDate})`
+                          : lastDate
+                            ? `Present on last attendance (${lastDate})`
+                            : "No previous attendance found"
+                      }
+                    >
+                      {s.name}
+                    </td>
+
                     <td>{s.class_role}</td>
 
-                    <td>
-                      {todayAttendance?.isPresent ? (
-                        <button
-                          className="btn btn-sm bg-red-500 text-white"
-                          onClick={() => markAbsent(s._id)}
-                        >
-                          Mark Absent
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-sm bg-green-500 text-white"
-                          onClick={() => markPresent(s._id)}
-                        >
-                          Mark Present
-                        </button>
-                      )}
+                    <td className="text-center">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-success"
+                        checked={!!attendanceMap[s._id]} // ✅ checked = present
+                        onChange={() => toggleAttendance(s._id)}
+                      />
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          <div className="flex justify-between items-center gap-3">
+            <p className="text-sm text-gray-500">
+              ✅ Tick = Present | ❌ Untick = Absent
+            </p>
+
+            <div className="flex items-center gap-3">
+              <p className="text-sm font-semibold">
+                Present: <span className="text-green-600">{presentCount}</span>{" "}
+                | Absent: <span className="text-red-600">{absentCount}</span>
+              </p>
+
+              <button
+                onClick={submitAttendance}
+                className="btn bg-blue-600 text-white"
+                disabled={submitting}
+              >
+                {submitting ? "Submitting..." : "Submit Attendance"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

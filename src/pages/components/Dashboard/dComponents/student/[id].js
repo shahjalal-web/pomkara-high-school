@@ -331,7 +331,18 @@ const StudentDetails = () => {
       <AttendanceSummary attendance={student?.attendance || []} />
 
       {/* ================= RESULT TABLE (WITH FILTER) ================= */}
-      <ResultSection results={student?.result || []} />
+      {/* <ResultSection results={student?.result || []} /> */}
+
+      <ResultSection
+        results={student?.result || []}
+        student={{
+          name: student.name,
+          class: student.class,
+          class_role: student.class_role,
+        }}
+        school={{ name: "বাকশীমূল উচ্চ বিদ্যালয়", address: "বাকশীমূল, বুড়িচং, কুমিল্লা" }}
+      />
+
       {/* Due Payments */}
       <DuePaymentsSection payments={reversedDuePayments} />
 

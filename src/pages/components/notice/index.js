@@ -1,19 +1,23 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+
 import { useEffect, useState } from "react";
+import DOMPurify from "dompurify";
 
 export default function Notices() {
-  const [showAll, setShowAll] = useState(false);
-  const [selectedPriority, setSelectedPriority] = useState("");
-  const [notices, setNotices] = useState(null);
+  const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // ✅ Print
+  const [selectedNotice, setSelectedNotice] = useState(null);
 
   const fetchNotices = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/notices?priority=${selectedPriority}&limit=${showAll ? 50 : 5}`);
+      const res = await fetch(`https://pomkara-high-school-server.vercel.app/api/notices?limit=50`);
       const data = await res.json();
-      setNotices(data);
+      setNotices(Array.isArray(data) ? data : data?.data || []);
     } catch (error) {
       console.error("Failed to fetch notices", error);
       setNotices([]);
@@ -24,71 +28,43 @@ export default function Notices() {
 
   useEffect(() => {
     fetchNotices();
-  }, [showAll, selectedPriority]);
+  }, []);
 
-  const priorities = [
-    { value: "high", label: "High Priority", icon: "🔴" },
-    { value: "medium", label: "Medium Priority", icon: "🟡" },
-    { value: "low", label: "Low Priority", icon: "🟢" },
-  ];
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800 border-red-200";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "low":
-        return "bg-green-100 text-green-800 border-green-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const formatDate = (timestamp) =>
-    new Date(timestamp).toLocaleDateString("en-US", {
+  const formatDate = (timestamp) => {
+    if (!timestamp) return "";
+    return new Date(timestamp).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
+  };
+
+  // ✅ open print preview
+  const handleOpenPrintView = (notice) => {
+    setSelectedNotice(notice);
+
+    // scroll top (optional)
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePrint = () => {
+    if (!selectedNotice) return;
+    setTimeout(() => window.print(), 200);
+  };
+
+  const handleClose = () => setSelectedNotice(null);
 
   return (
-    <section className="py-20 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <section className="py-16 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-5xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 text-gray-800">
-            Latest <span className="text-blue-600">Notices</span>
+        {/* Title */}
+        <div className="text-center mb-10">
+          <h2 className="text-4xl font-bold mb-3 text-gray-800">
+            School <span className="text-blue-600">Notices</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Stay updated with the latest announcements, events, and important information from our school.
+            Click any notice card to open print view.
           </p>
-
-          {/* Filter buttons */}
-          <div className="flex flex-wrap justify-center gap-3 mt-6">
-            <button
-              onClick={() => setSelectedPriority("")}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedPriority === ""
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-white text-gray-700 hover:bg-gray-100 shadow"
-              }`}
-            >
-              All Notices
-            </button>
-            {priorities.map((priority) => (
-              <button
-                key={priority.value}
-                onClick={() => setSelectedPriority(priority.value)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  selectedPriority === priority.value
-                    ? "bg-blue-600 text-white shadow-lg"
-                    : "bg-white text-gray-700 hover:bg-gray-100 shadow"
-                }`}
-              >
-                {priority.label}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Loader */}
@@ -99,65 +75,235 @@ export default function Notices() {
           </div>
         )}
 
-        {/* Notices */}
-        {!loading && notices && notices.length > 0 && (
-          <div className="space-y-6 mb-12">
-            {notices.map((notice, index) => (
-              <div
+        {/* Notice List */}
+        {!loading && notices.length > 0 && (
+          <div className="grid sm:grid-cols-2 gap-6">
+            {notices.map((notice) => (
+              <button
                 key={notice._id}
-                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 animate-fadeInUp card-hover"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => handleOpenPrintView(notice)}
+                className="text-left bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-blue-200 group"
               >
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl">
-                        {priorities.find((p) => p.value === notice.priority)?.icon || "📢"}
-                      </span>
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-800 mb-1">{notice.title}</h3>
-                        <div className="flex items-center space-x-3">
-                          <span
-                            className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getPriorityColor(
-                              notice.priority
-                            )}`}
-                          >
-                            {notice.priority.charAt(0).toUpperCase() + notice.priority.slice(1)} Priority
-                          </span>
-                          <span className="text-sm text-gray-500">📅 {formatDate(notice.publishedAt)}</span>
-                        </div>
-                      </div>
-                    </div>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition">
+                      {notice.heading || notice.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 mt-2">
+                      📅 {formatDate(notice.createdAt || notice.publishedAt)}
+                    </p>
                   </div>
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{notice.content}</p>
+
+                  <span className="text-2xl">📰</span>
                 </div>
-              </div>
+
+                <p className="text-gray-600 mt-4 line-clamp-3">
+                  {/* preview text */}
+                  {notice.paragraph
+                    ? notice.paragraph.replace(/<[^>]*>?/gm, "").slice(0, 120) + "..."
+                    : (notice.content || "").slice(0, 120) + "..."}
+                </p>
+
+                <div className="mt-5 flex items-center justify-between">
+                  <span className="text-blue-600 text-sm font-semibold">
+                    View & Print →
+                  </span>
+                </div>
+              </button>
             ))}
           </div>
         )}
 
-        {/* No notices */}
-        {!loading && notices && notices.length === 0 && (
+        {/* Empty */}
+        {!loading && notices.length === 0 && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📢</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">No Notices Available</h3>
-            <p className="text-gray-600">
-              {selectedPriority
-                ? `No ${selectedPriority} priority notices found. Check back later.`
-                : "No notices found. Check back later."}
-            </p>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">
+              No Notices Available
+            </h3>
+            <p className="text-gray-600">Please check back later.</p>
           </div>
         )}
 
-        {/* Show more/less */}
-        {!loading && notices && notices.length >= 5 && (
-          <div className="text-center animate-fadeInUp">
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg btn-animate"
-            >
-              {showAll ? "Show Less" : `See All Notices (${notices.length}+)`}
-            </button>
+        {/* ✅ Print Preview Modal (click card -> show) */}
+        {selectedNotice && (
+          <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden">
+              {/* Modal Header */}
+              <div className="flex justify-between items-center px-5 py-3 border-b bg-gray-50">
+                <h3 className="font-bold text-gray-800">
+                  Print Preview:{" "}
+                  <span className="text-blue-600">
+                    {selectedNotice.heading || selectedNotice.title}
+                  </span>
+                </h3>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={handlePrint}
+                    className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                  >
+                    Print
+                  </button>
+                  <button
+                    onClick={handleClose}
+                    className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+              {/* Preview Content */}
+              <div className="p-4 max-h-[80vh] overflow-auto">
+                {/* ✅ print area */}
+                <div id="printArea">
+                  {/* ✅ exact header image */}
+                  <div className="printHeaderImg">
+                    <img
+                      src="/notice-header.png"
+                      alt="School Header"
+                      className="headerImage"
+                    />
+                  </div>
+
+                  {/* title */}
+                  <div className="printTitle">
+                    <h2>{selectedNotice.heading || selectedNotice.title}</h2>
+                  </div>
+
+                  {/* body */}
+                  <div
+                    className="printBody ql-editor"
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(
+                        selectedNotice.paragraph || selectedNotice.content || ""
+                      ),
+                    }}
+                  />
+
+                  {/* footer signatures */}
+                  <div className="printFooter">
+                    <div className="signBox">
+                      <p className="signLine">_______________________</p>
+                      <p>শ্রেণি শিক্ষক</p>
+                    </div>
+                    <div className="signBox">
+                      <p className="signLine">_______________________</p>
+                      <p>প্রধান শিক্ষক</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ✅ Print CSS */}
+            <style jsx global>{`
+              @page {
+                size: A4;
+                margin: 0;
+              }
+
+              @media print {
+                html,
+                body {
+                  width: 210mm;
+                  height: 297mm;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  overflow: hidden !important;
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                }
+
+                body * {
+                  visibility: hidden;
+                }
+
+                #printArea,
+                #printArea * {
+                  visibility: visible;
+                }
+
+                #printArea {
+                  position: fixed;
+                  left: 0;
+                  top: 0;
+                  width: 210mm;
+                  height: 297mm;
+                  padding: 12mm 12mm 16mm 12mm;
+                  background: white;
+                  color: black;
+                  overflow: hidden;
+                }
+
+                .printBody p {
+                  margin: 0 0 8px 0 !important;
+                }
+
+                .printBody ul {
+                  list-style-type: disc !important;
+                  padding-left: 22px !important;
+                  margin: 8px 0 !important;
+                }
+                .printBody ol {
+                  list-style-type: decimal !important;
+                  padding-left: 22px !important;
+                  margin: 8px 0 !important;
+                }
+                .printBody li {
+                  margin: 4px 0 !important;
+                }
+              }
+
+              .printHeaderImg {
+                width: 100%;
+                margin-bottom: 8px;
+              }
+              .headerImage {
+                width: 100%;
+                height: auto;
+                display: block;
+              }
+
+              .printTitle {
+                text-align: center;
+                margin: 12px 0 12px;
+              }
+              .printTitle h2 {
+                font-size: 18px;
+                font-weight: 700;
+                margin: 0;
+              }
+
+              .printBody {
+                font-size: 14px;
+                line-height: 22px;
+                padding: 0 4px;
+                max-height: 200mm;
+                overflow: hidden;
+              }
+
+              .printFooter {
+                position: absolute;
+                bottom: 12mm;
+                left: 12mm;
+                right: 12mm;
+                display: flex;
+                justify-content: space-between;
+                gap: 30px;
+              }
+
+              .signBox {
+                width: 45%;
+                text-align: center;
+                font-size: 13px;
+              }
+
+              .signLine {
+                margin-bottom: 6px;
+              }
+            `}</style>
           </div>
         )}
       </div>

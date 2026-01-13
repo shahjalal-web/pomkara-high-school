@@ -44,6 +44,11 @@ const DashboardLayout = ({ children }) => {
       icon: <FaUserGraduate />,
     },
     {
+      name: "Results",
+      link: "/components/Dashboard/dComponents/result",
+      icon: <FaUserGraduate />,
+    },
+    {
       name: "Attendance",
       link: "/components/Dashboard/dComponents/present",
       icon: <FaCalendarCheck />,
